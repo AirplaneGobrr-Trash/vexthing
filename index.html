@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thing</title>
+    <style>
+        .match {
+            border: 5px;
+            border-color: red;
+            border-style: dotted;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <input type="number" id="shift">
+    <div id="matches"></div>
+    <script defer>
+        const matchesElm = document.getElementById("matches")
+        const shiftElm = document.getElementById("shift")
+
+        async function m(){
+            let response = await fetch("/data")
+            let data = await response.json()
+            data = data.sort((a,b)=> new Date(a.scheduled) - new Date(b.scheduled))
+            console.log(data)
+            for (let match of data) {
+                let ourColor = null
+                for (let alli of match.alliances) {
+                    for (let team of alli.teams) {
+                        console.log(alli.color, team)
+                        let teamId = team.team.name
+                        if (teamId == "6627Y") ourColor = alli.color
+                    }
+                }
+                let start = new Date(match.scheduled)
+                let currDate = new Date()
+                let cMin = start.getMinutes()
+                let toShift = Number(shiftElm.value)
+                let totalShift = cMin + toShift
+
+                start.setMinutes(totalShift)
+                let milliUntillMatch = start.valueOf() - currDate.valueOf()
+
+                console.log(match)
+                console.log("Shifted", start.toLocaleTimeString(), currDate.toLocaleTimeString(), toShift, totalShift)
+                const html = `
+                <h1>${match.name}</h1>
+                <h1 style="color: ${ourColor};">We are ${ourColor}</h1>
+                <h2>Time: ${(milliUntillMatch/1000)/60} (Should be ${start.toLocaleTimeString()})</h2>
+                `
+                const divElm = document.createElement("div")
+                divElm.innerHTML = html
+                divElm.classList.add("match")
+                matchesElm.appendChild(divElm)
+            }
+        }
+        m()
+    </script>
+</body>
+</html>
