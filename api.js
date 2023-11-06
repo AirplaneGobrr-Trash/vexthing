@@ -4,14 +4,40 @@ const eApi = new axios.Axios({baseURL: "https://www.robotevents.com/api/v2/", he
     Authorization: `Bearer ${apiKey}`
 }})
 
-
-async function getTeamWithString(teamID) {
-    let dataRaw = await eApi.get(`/teams?number=${teamID}`)
+async function getTeamWithString(teamNumber) {
+    let dataRaw = await eApi.get(`/teams?number=${teamNumber}`)
     let data = JSON.parse(dataRaw.data)
     if (data.meta.total != 1) {
         return null
     }
     return data.data[0]
+}
+
+async function getTeam(teamID) {
+    let dataRaw = await eApi.get(`/teams/${teamID}`)
+    let data = JSON.parse(dataRaw.data)
+    console.log(data)
+    return data
+}
+
+async function getTeamEvents(teamID) {
+    let startDate = new Date()
+    startDate.setMonth(3, 1)
+    let dataRaw = await eApi.get(`https://www.robotevents.com/api/v2/events?team=${teamID}&start=${startDate?.toDateString()}&per_page=100`)
+    console.log(dataRaw.data)
+    const data = JSON.parse(dataRaw.data)
+    console.log(data)
+    // if (data.meta.total != 1) {
+    //     return null
+    // }
+    return data.data
+}
+
+async function getEventWithID(eventID) {
+    let dataRaw = await eApi.get(`/events/${eventID}/`)
+    let data = JSON.parse(dataRaw.data)
+    console.log(data)
+    return data
 }
 
 async function getMatches(eventID, divID = 1, teams = [], page = 1) {
@@ -33,5 +59,8 @@ async function main(){
 
 module.exports = {
     getTeamWithString,
-    getMatches
+    getMatches,
+    getEventWithID,
+    getTeam,
+    getTeamEvents
 }

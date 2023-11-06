@@ -1,13 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/style/main.css">
 </head>
+
 <body>
-    <input type="image" id="image" alt="Robot" src="/media/examples/login-button.png" />
+    <h1 id="teamName">{{teamNumber}}</h1>
+    <img id="image" alt="Robot" style="height: 500px;" />
+    <br>
+    <input type="file" id="updatePicture" /><button id="upload">Upload</button>
 
+    <hr>
 
+    <form id="skills">
+        <label for="cata">Cata:</label>
+        <input type="checkbox" id="cata"><br>
+
+        <label for="push">Push:</label>
+        <input type="checkbox" id="push"><br>
+
+        <label for="wings">Wings:</label>
+        <input type="checkbox" id="wings"><br>
+
+        <hr>
+
+        <label for="autonF">Auton Far:</label>
+        <input type="checkbox" id="autonF"><br>
+
+        <label for="autonN">Auton Near:</label>
+        <input type="checkbox" id="autonN"><br>
+
+        <hr>
+
+        <label for="hangP">Hang passive:</label>
+        <input type="checkbox" id="hangP"><br>
+
+        <label for="hangB">Hang break:</label>
+        <input type="checkbox" id="hangPB"><br>
+
+        <hr>
+
+        <label for="intake">Intake:</label>
+        <select id="intake">
+            <option value="arm">Arm</option>
+            <option value="flywheel">Flywheel</option>
+            <option value="other">Other</option>
+        </select>
+
+        <hr>
+
+        <label for="notes">Notes:</label><br>
+        <textarea id="notes"></textarea>
+
+        <hr>
+
+        <input type="submit" id="save" value="Save"><input type="submit" id="cancel" value="Cancel">
+    </form>
+
+    <script defer>
+        const splitURL = window.location.pathname.split("/")
+        const teamID = splitURL.pop()
+        const eventID = splitURL.pop()
+        console.log(teamID)
+
+        const skillsElm = document.getElementById("skills")
+        const imageElm = document.getElementById("image")
+        const pictureElm = document.getElementById("updatePicture")
+        const uploadElm = document.getElementById("upload")
+
+        imageElm.src = `/pictures/teams/${eventID}/${teamID}.png`
+
+        uploadElm.onclick = () => {
+            console.log(pictureElm.files)
+            let file = pictureElm.files[0]
+            let toSend = new FormData();
+            toSend.append("file", file);
+            fetch(`/upload/${eventID}/${teamID}`, { method: "POST", body: toSend }).then((r) => {
+                imageElm.src = `/pictures/teams/${eventID}/${teamID}.png?${new Date().getTime()}`
+            });
+
+        }
+    </script>
 </body>
+
 </html>

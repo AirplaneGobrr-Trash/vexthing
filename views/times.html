@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thing</title>
+    <link rel="stylesheet" href="/style/main.css">
+</head>
+
+<body>
+    <input type="number" id="shift">
+    <div id="matches" class="matchHolder"></div>
+    <script defer>
+        const matchesElm = document.getElementById("matches")
+        const shiftElm = document.getElementById("shift")
+
+        const splitURL = window.location.pathname.split("/")
+        const teamID = splitURL.pop()
+        const eventID = splitURL.pop()
+
+        async function m() {
+            let response = await fetch(`/getTeamMatches/${eventID}/${teamID}`)
+            let data = await response.json()
+            data = data.sort((a, b) => new Date(a.scheduled ?? a.started) - new Date(b.scheduled ?? b.started))
+            console.log(data)
+            for (let match of data) {
+                let ourColor = null
+                let teamInfo = []
+                for (let alli of match.alliances) {
+                    for (let team of alli.teams) {
+                        // console.log(alli.color, team)
+                        let teamNumber = team.team.name
+                        if (teamNumber == "{{teamNumber}}") ourColor = alli.color
+                        teamInfo.push({teamNumber: teamNumber, teamID: team.team.id, color: alli.color})
+                    }
+                }
+                let start = new Date(match.scheduled ?? match.started)
+                let currDate = new Date()
+                let cMin = start.getMinutes()
+                let toShift = Number(shiftElm.value)
+                let totalShift = cMin + toShift
+
+                start.setMinutes(totalShift)
+                let milliUntillMatch = start.valueOf() - currDate.valueOf()
+
+                console.log(match)
+                console.log("Shifted", start.toLocaleTimeString(), currDate.toLocaleTimeString(), toShift, totalShift)
+                let ourPeoples = teamInfo.filter((e)=>e.color==ourColor)
+                let notOurPeopels = teamInfo.filter((e)=>e.color!=ourColor)
+
+                let ourHTML = ""
+                let otherHTML = ""
+
+                for (let team of ourPeoples) {
+                    ourHTML += `<a href="/team/${eventID}/${team.teamID}" target="_blank">${team.teamNumber}</a> `
+                }
+
+                for (let team of notOurPeopels) {
+                    otherHTML += `<a href="/team/${eventID}/${team.teamID}" target="_blank">${team.teamNumber}</a> `
+                }
+                
+                const html = `
+                <h1>${match.name}</h1>
+                <h1 style="color: ${ourColor};">We are ${ourColor}</h1>
+                <h2>Time: ${(milliUntillMatch / 1000) / 60} (Should be ${start.toLocaleTimeString()})</h2>
+                <h3>OurPeople: ${ourHTML}</h3>
+                <h3>Other: ${otherHTML}</h3>
+                `
+                const divElm = document.createElement("div")
+                divElm.innerHTML = html
+                divElm.classList.add("match")
+                matchesElm.appendChild(divElm)
+            }
+        }
+        m()
+    </script>
+</body>
+
+</html>

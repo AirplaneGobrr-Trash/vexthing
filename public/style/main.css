@@ -1,0 +1,18 @@
+* {
+    background-color: #222;
+    color: white;
+}
+
+.matchHolder {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.match {
+    border: 5px;
+    border-color: yellow;
+    border-style: dotted;
+    margin: 5px;
+    padding: 5px;
+    width: fit-content;
+}

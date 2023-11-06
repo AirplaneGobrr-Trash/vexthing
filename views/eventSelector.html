@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event selector</title>
+    <link rel="stylesheet" href="/style/main.css">
+</head>
+<body>
+    <h1 id="team"></h1>
+    <div id="events"></div>
+    <script defer>
+        const teamNameElm = document.getElementById("team")
+        const eventsElm = document.getElementById("events")
+
+        const splitURL = window.location.pathname.split("/")
+        const teamNumber = splitURL.pop()
+        teamNameElm.innerText = teamNumber
+
+        fetch("/getTeamEvents/{{teamID}}").then(async (r)=>{
+            let data = await r.json()
+            console.log(data)
+            for (let event of data) {
+                let date = new Date(event.start)
+                let today = new Date()
+                let locString = `${event.location.address_1}${event.location.address_2 ? ", " + event.location.address_2: ""}, ${event.location.city}, ${event.location.region}, ${event.location.country}`
+                let html = `
+                <h3>Where:  <a>${locString}</a> <a href="https://www.google.com/maps/search/${locString.replaceAll(" ", "+")}" target="_blank">(Google Maps)</a> <a href="https://maps.apple.com/?address=${locString.replaceAll(" ", "+")}" target="_blank">(Apple Maps)</a></h3>
+                <h3>Venue: ${event.location.venue}</h3>
+                <h3>When: ${date.toLocaleDateString()} (${Math.round((date.valueOf() - today.valueOf())/1000/60/60/24)} days)</h3>
+                <h3>Goto Page: <a href="/times/${event.id}/{{teamID}}">GO!</a>
+                `
+                let divElm = document.createElement("div")
+                divElm.innerHTML = html
+                divElm.classList.add("match")
+                eventsElm.appendChild(divElm)
+            }
+        })
+    </script>
+</body>
+</html>
