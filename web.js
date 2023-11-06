@@ -8,6 +8,8 @@ const {TwingEnvironment, TwingLoaderFilesystem} = require('twing');
 let loader = new TwingLoaderFilesystem('./views');
 let twing = new TwingEnvironment(loader, {auto_reload: true,cache:false});
 
+const bp = require("body-parser")
+app.use(bp.json({limit: "100mb"}))
 
 module.exports = {
     express, app, http, server, twing

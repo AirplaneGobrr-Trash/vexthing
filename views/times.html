@@ -10,8 +10,21 @@
 
 <body>
     <input type="number" id="shift">
-    <div id="matches" class="matchHolder"></div>
+
+    <h1 class="collapsible active">Our Matches:</h1>
+    <div class="content">
+        <div id="ourMatches" class="matchHolder"></div>
+    </div>
+
+    <hr>
+
+    <h1 class="collapsible">All Matches:</h1>
+    <div class="content">
+        <div id="matches" class="matchHolder"></div>
+    </div>
+
     <script defer>
+        const ourMatchesElm = document.getElementById("ourMatches")
         const matchesElm = document.getElementById("matches")
         const shiftElm = document.getElementById("shift")
 
@@ -20,11 +33,17 @@
         const eventID = splitURL.pop()
 
         async function m() {
-            let response = await fetch(`/getTeamMatches/${eventID}/${teamID}`)
-            let data = await response.json()
-            data = data.sort((a, b) => new Date(a.scheduled ?? a.started) - new Date(b.scheduled ?? b.started))
-            console.log(data)
-            for (let match of data) {
+            let matchResponse = await fetch(`/getTeams/${eventID}`)
+            let matchData = await matchResponse.json()
+            matchData = matchData.sort((a, b) => new Date(a.scheduled ?? a.started) - new Date(b.scheduled ?? b.started))
+            console.log(matchData)
+            if (matchData.length == 0) {
+                console.log("Event matches not out!")
+                const warning = document.createElement("h1")
+                warning.innerText = "It looks like the event hasn't pushed any macthes out yet! Has the event started yet?"
+                matchesElm.appendChild(warning)
+            }
+            for (let match of matchData) {
                 let ourColor = null
                 let teamInfo = []
                 for (let alli of match.alliances) {
@@ -32,7 +51,7 @@
                         // console.log(alli.color, team)
                         let teamNumber = team.team.name
                         if (teamNumber == "{{teamNumber}}") ourColor = alli.color
-                        teamInfo.push({teamNumber: teamNumber, teamID: team.team.id, color: alli.color})
+                        teamInfo.push({ teamNumber: teamNumber, teamID: team.team.id, color: alli.color })
                     }
                 }
                 let start = new Date(match.scheduled ?? match.started)
@@ -46,34 +65,65 @@
 
                 console.log(match)
                 console.log("Shifted", start.toLocaleTimeString(), currDate.toLocaleTimeString(), toShift, totalShift)
-                let ourPeoples = teamInfo.filter((e)=>e.color==ourColor)
-                let notOurPeopels = teamInfo.filter((e)=>e.color!=ourColor)
+                let ourPeoples = teamInfo.filter((e) => e.color == ourColor)
+                let notOurPeopels = teamInfo.filter((e) => e.color != ourColor)
 
-                let ourHTML = ""
-                let otherHTML = ""
 
-                for (let team of ourPeoples) {
-                    ourHTML += `<a href="/team/${eventID}/${team.teamID}" target="_blank">${team.teamNumber}</a> `
+                let blueHTML = ""
+                let redHTML = ""
+
+                for (let team of teamInfo) {
+                    let html = ""
+                    if (team.teamNumber == "{{teamNumber}}") {
+                        html = `<a href="/team/${eventID}/${team.teamID}" style="color:yellow;" target="_blank">${team.teamNumber}</a> `
+                    } else {
+                        html += `<a href="/team/${eventID}/${team.teamID}" target="_blank">${team.teamNumber}</a> `
+                    }
+                    if (team.color == "blue") {
+                        blueHTML += html
+                    } else {
+                        redHTML += html
+                    }
                 }
 
-                for (let team of notOurPeopels) {
-                    otherHTML += `<a href="/team/${eventID}/${team.teamID}" target="_blank">${team.teamNumber}</a> `
-                }
-                
+                let colorHTML = ""
+                if (ourColor) colorHTML = `<h2 style="color: ${ourColor};">We are ${ourColor}</h2>`
+
                 const html = `
                 <h1>${match.name}</h1>
-                <h1 style="color: ${ourColor};">We are ${ourColor}</h1>
-                <h2>Time: ${(milliUntillMatch / 1000) / 60} (Should be ${start.toLocaleTimeString()})</h2>
-                <h3>OurPeople: ${ourHTML}</h3>
-                <h3>Other: ${otherHTML}</h3>
+                ${colorHTML}
+                <p>Time Until (Minutes): ${(milliUntillMatch / 1000) / 60}</p>
+                <p>Start time: ${start.toLocaleTimeString()}</p>
+                <p><a style="color:blue;">Blue</a>: ${blueHTML}</p>
+                <p><a style="color:red;">Red</a>: ${redHTML}</p>
                 `
                 const divElm = document.createElement("div")
                 divElm.innerHTML = html
                 divElm.classList.add("match")
-                matchesElm.appendChild(divElm)
+                if (ourColor) {
+                    divElm.classList.add("ourMatch")
+                    ourMatchesElm.append(divElm.cloneNode(true))
+                }
+                matchesElm.append(divElm.cloneNode(true))
             }
         }
         m()
+    </script>
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
     </script>
 </body>
 

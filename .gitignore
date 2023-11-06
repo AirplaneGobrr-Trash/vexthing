@@ -133,3 +133,5 @@ dist
 
 public/teams/*
 public/pictures/teams/*
+*.sqlite
+tmpData/*

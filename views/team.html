@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>{{teamNumber}} - Team</title>
     <link rel="stylesheet" href="/style/main.css">
 </head>
 
@@ -17,8 +17,8 @@
     <hr>
 
     <form id="skills">
-        <label for="cata">Cata:</label>
-        <input type="checkbox" id="cata"><br>
+        <label for="intake">Intake:</label>
+        <input type="checkbox" id="intake"><br>
 
         <label for="push">Push:</label>
         <input type="checkbox" id="push"><br>
@@ -40,15 +40,16 @@
         <input type="checkbox" id="hangP"><br>
 
         <label for="hangB">Hang break:</label>
-        <input type="checkbox" id="hangPB"><br>
+        <input type="checkbox" id="hangB"><br>
 
         <hr>
 
-        <label for="intake">Intake:</label>
-        <select id="intake">
+        <label for="cata">Cata:</label>
+        <select id="cata">
             <option value="arm">Arm</option>
             <option value="flywheel">Flywheel</option>
             <option value="other">Other</option>
+            <option value="none" selected>None</option>
         </select>
 
         <hr>
@@ -72,7 +73,20 @@
         const pictureElm = document.getElementById("updatePicture")
         const uploadElm = document.getElementById("upload")
 
-        imageElm.src = `/pictures/teams/${eventID}/${teamID}.png`
+        const teamDataElms = {
+            cata: document.getElementById("cata"),
+            push: document.getElementById("push"),
+            wings: document.getElementById("wings"),
+            autonF: document.getElementById("autonF"),
+            autonN: document.getElementById("autonN"),
+            hangP: document.getElementById("hangP"),
+            hangB: document.getElementById("hangB"),
+            intake: document.getElementById("intake"),
+            note: document.getElementById("notes")
+        }
+
+        let imgURL = `/data/team/${eventID}/${teamID}.png`
+        imageElm.src = imgURL
 
         uploadElm.onclick = () => {
             console.log(pictureElm.files)
@@ -80,10 +94,111 @@
             let toSend = new FormData();
             toSend.append("file", file);
             fetch(`/upload/${eventID}/${teamID}`, { method: "POST", body: toSend }).then((r) => {
-                imageElm.src = `/pictures/teams/${eventID}/${teamID}.png?${new Date().getTime()}`
+                imageElm.src = `${imgURL}&${new Date().getTime()}`
             });
+        }
+
+        skillsElm.onsubmit = (event) => {
+            event.preventDefault()
+            let subType = event.submitter.value.toLowerCase()
+            if (subType == "save") {
+                let cataValue = teamDataElms.cata.options.selectedIndex +1
+                let hangValue = 0
+                let autonValue = 0
+                if (teamDataElms.hangB.checked) hangValue += 1
+                if (teamDataElms.hangP.checked) hangValue += 2
+
+                if (teamDataElms.autonF.checked) autonValue += 1
+                if (teamDataElms.autonN.checked) autonValue += 2
+
+                let toSend = {
+                    teamNumber: "{{teamNumber}}",
+                    intake: teamDataElms.intake.checked,
+                    push: teamDataElms.push.checked,
+                    wings: teamDataElms.wings.checked,
+                    auton: autonValue,
+                    hang: hangValue,
+                    cata: cataValue,
+                    notes: teamDataElms.note.value
+                }
+                console.log()
+                console.log(toSend)
+                fetch(`/upload/${eventID}/${teamID}`, { method: "POST", body: JSON.stringify(toSend), headers: { "Content-Type": "application/json"} }).then((r) => {
+                })
+            }
+        }
+
+        teamDataElms.note.addEventListener('input', autoResize, false)
+
+        function autoResize() {
+            let elm = teamDataElms.note
+            elm.style.height = 'auto';
+            elm.style.width = 'auto';
+            elm.style.height = elm.scrollHeight + 'px';
+            elm.style.width = elm.scrollWidth +50 + 'px';
+            console.log(elm)
+        }
+
+        async function loadData(){
+            let teamDataResponse = await fetch(`/data/team/${eventID}/${teamID}`)
+            let teamData = await teamDataResponse.json()
+            console.log(teamData)
+
+            switch(teamData.auton){
+                case 1: {
+                    teamDataElms.autonF.checked = true
+                    teamDataElms.autonN.checked = false
+                    break
+                }
+                case 2: {
+                    teamDataElms.autonN.checked = true
+                    teamDataElms.autonF.checked = false
+                    break
+                }
+                case 3: {
+                    teamDataElms.autonF.checked = true
+                    teamDataElms.autonN.checked = true
+                    break
+                }
+                default: {
+                    teamDataElms.autonF.checked = false
+                    teamDataElms.autonN.checked = false
+                }
+            }
+
+
+            switch(teamData.hang){
+                case 2: {
+                    teamDataElms.hangP.checked = true
+                    teamDataElms.hangB.checked = false
+                    break
+                }
+                case 1: {
+                    teamDataElms.hangB.checked = true
+                    teamDataElms.hangP.checked = false
+                    break
+                }
+                case 3: {
+                    teamDataElms.hangP.checked = true
+                    teamDataElms.hangB.checked = true
+                    break
+                }
+                default: {
+                    teamDataElms.hangP.checked = false
+                    teamDataElms.hangB.checked = false
+                }
+            }
+
+            // GET: teamDataElms.cata.options.selectedIndex
+            teamDataElms.cata.options.selectedIndex = teamData.cata-1
+            teamDataElms.intake.checked = teamData.intake
+            teamDataElms.push.checked = teamData.push
+            teamDataElms.wings.checked = teamData.wings
+            teamDataElms.note.value = teamData.notes ?? ""
+            autoResize()
 
         }
+        loadData()
     </script>
 </body>
 
