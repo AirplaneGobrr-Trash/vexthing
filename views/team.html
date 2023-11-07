@@ -94,7 +94,7 @@
             let toSend = new FormData();
             toSend.append("file", file);
             fetch(`/upload/${eventID}/${teamID}`, { method: "POST", body: toSend }).then((r) => {
-                imageElm.src = `${imgURL}&${new Date().getTime()}`
+                imageElm.src = `${imgURL}?${new Date().getTime()}`
             });
         }
 

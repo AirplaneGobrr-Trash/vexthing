@@ -38,10 +38,11 @@
 
         const splitURL = window.location.pathname.split("/")
         const teamID = splitURL.pop()
+        const divID = splitURL.pop()
         const eventID = splitURL.pop()
 
         async function m() {
-            let matchResponse = await fetch(`/getMatches/${eventID}`)
+            let matchResponse = await fetch(`/getMatches/${eventID}/${divID}`)
             let matchData = await matchResponse.json()
             matchData = matchData.sort((a, b) => new Date(a.scheduled ?? a.started) - new Date(b.scheduled ?? b.started))
             console.log(matchData)
@@ -132,7 +133,9 @@
             if (addedTeams.length != 0) return
             let teamReponse = await fetch(`/teams/${eventID}`)
             let teamData = await teamReponse.json()
-            for (let team of teamData) {
+            console.log("teamData", teamData)
+            let teamDataSorted = teamData.sort((a,b)=> a.number-b.number)
+            for (let team of teamDataSorted) {
                 console.log(team)
                 const h1 = document.createElement("h1")
                 h1.innerHTML = `<a href="/team/${eventID}/${team.id}" target="_blank">${team.number}</a>`

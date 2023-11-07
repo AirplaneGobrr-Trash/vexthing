@@ -9,7 +9,7 @@ const knex = require('knex')({
 });
 const fs = require("fs")
 
-class event {
+class eventData {
     constructor(eventID){
         this.eventID = eventID
         this.eventDatabase = `event-${this.eventID}`
@@ -34,8 +34,7 @@ class event {
         return false
     }
     async getTeamData(teamID){
-        let stat = await this.create()
-        console.log("2",stat)
+        await this.create()
         return await knex(this.eventDatabase).where({ teamID: teamID }).first()
     }
     /**
@@ -53,14 +52,11 @@ class event {
      * @param {Buffer} putData.picture Picture of robot
      */
     async updateTeamData(teamID, putData) {
-        let stat = await this.create()
-        console.log("1",stat, putData)
+        await this.create()
         let data = await this.getTeamData(teamID)
         if (data) {
-            console.log("Data found!")
             await knex(this.eventDatabase).where({ teamID: teamID }).update(putData)
         } else {
-            console.log("Data not found!")
             putData.teamID = teamID
             await knex(this.eventDatabase).insert(putData)
         }
@@ -68,5 +64,5 @@ class event {
 }
 
 module.exports = {
-    event
+    eventData
 }

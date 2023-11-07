@@ -28,7 +28,7 @@
                 <h3>Where:  <a>${locString}</a> <a href="https://www.google.com/maps/search/${locString.replaceAll(" ", "+")}" target="_blank">(Google Maps)</a> <a href="https://maps.apple.com/?address=${locString.replaceAll(" ", "+")}" target="_blank">(Apple Maps)</a></h3>
                 <h3>Venue: ${event.location.venue}</h3>
                 <h3>When: ${date.toLocaleDateString()} (${Math.round((date.valueOf() - today.valueOf())/1000/60/60/24)} days)</h3>
-                <h3>Goto Page: <a href="/times/${event.id}/{{teamID}}">GO!</a>
+                <h3>Goto Page: <a href="/times/${event.id}/${event.divisions[0].id}/{{teamID}}">GO!</a>
                 `
                 let divElm = document.createElement("div")
                 divElm.innerHTML = html
