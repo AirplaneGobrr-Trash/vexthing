@@ -23,9 +23,17 @@
         <div id="matches" class="matchHolder"></div>
     </div>
 
+    <hr>
+
+    <h1 class="collapsible">Teams:</h1>
+    <div class="content">
+        <div id="teams" class=""></div>
+    </div>
+
     <script defer>
         const ourMatchesElm = document.getElementById("ourMatches")
         const matchesElm = document.getElementById("matches")
+        const teamsElm = document.getElementById("teams")
         const shiftElm = document.getElementById("shift")
 
         const splitURL = window.location.pathname.split("/")
@@ -33,15 +41,17 @@
         const eventID = splitURL.pop()
 
         async function m() {
-            let matchResponse = await fetch(`/getTeams/${eventID}`)
+            let matchResponse = await fetch(`/getMatches/${eventID}`)
             let matchData = await matchResponse.json()
             matchData = matchData.sort((a, b) => new Date(a.scheduled ?? a.started) - new Date(b.scheduled ?? b.started))
             console.log(matchData)
+            let addedTeams = []
             if (matchData.length == 0) {
                 console.log("Event matches not out!")
                 const warning = document.createElement("h1")
-                warning.innerText = "It looks like the event hasn't pushed any macthes out yet! Has the event started yet?"
-                matchesElm.appendChild(warning)
+                warning.innerText = "It looks like the event hasn't pushed any macthes out yet! Has the event started?"
+                matchesElm.appendChild(warning.cloneNode(true))
+                ourMatchesElm.appendChild(warning.cloneNode(true))
             }
             for (let match of matchData) {
                 let ourColor = null
@@ -51,6 +61,12 @@
                         // console.log(alli.color, team)
                         let teamNumber = team.team.name
                         if (teamNumber == "{{teamNumber}}") ourColor = alli.color
+                        if (!addedTeams.includes(teamNumber)) {
+                            addedTeams.push(teamNumber)
+                            const h1 = document.createElement("h1")
+                            h1.innerHTML = `<a href="/team/${eventID}/${team.team.id}" target="_blank">${teamNumber}</a>`
+                            teamsElm.appendChild(h1)
+                        }
                         teamInfo.push({ teamNumber: teamNumber, teamID: team.team.id, color: alli.color })
                     }
                 }
@@ -86,16 +102,22 @@
                     }
                 }
 
+                let blueColor = "cyan"
+                let redColor = "red"
+
                 let colorHTML = ""
-                if (ourColor) colorHTML = `<h2 style="color: ${ourColor};">We are ${ourColor}</h2>`
+                switch (ourColor) {
+                    case "blue": colorHTML = `<h2 style="color: ${blueColor};">We are blue</h2>`; break;
+                    case "red": colorHTML = `<h2 style="color: ${redColor};">We are red</h2>`; break;
+                }
 
                 const html = `
                 <h1>${match.name}</h1>
                 ${colorHTML}
                 <p>Time Until (Minutes): ${(milliUntillMatch / 1000) / 60}</p>
                 <p>Start time: ${start.toLocaleTimeString()}</p>
-                <p><a style="color:blue;">Blue</a>: ${blueHTML}</p>
-                <p><a style="color:red;">Red</a>: ${redHTML}</p>
+                <p><a style="color:${blueColor};">Blue</a>: ${blueHTML}</p>
+                <p><a style="color:${redColor};">Red</a>: ${redHTML}</p>
                 `
                 const divElm = document.createElement("div")
                 divElm.innerHTML = html
@@ -105,6 +127,16 @@
                     ourMatchesElm.append(divElm.cloneNode(true))
                 }
                 matchesElm.append(divElm.cloneNode(true))
+            }
+        
+            if (addedTeams.length != 0) return
+            let teamReponse = await fetch(`/teams/${eventID}`)
+            let teamData = await teamReponse.json()
+            for (let team of teamData) {
+                console.log(team)
+                const h1 = document.createElement("h1")
+                h1.innerHTML = `<a href="/team/${eventID}/${team.id}" target="_blank">${team.number}</a>`
+                teamsElm.appendChild(h1)
             }
         }
         m()

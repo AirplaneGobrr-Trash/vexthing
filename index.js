@@ -7,20 +7,6 @@ const dataHelper = require("./dataHelper")
 
 const events = {}
 
-async function m(){
-  let s1 = performance.now()
-  let e = await api.getEventWithID(53579)
-  let e1 = performance.now()
-  setTimeout(async ()=>{
-    let s2 = performance.now()
-    await api.getEventWithID(53579)
-    let e2 = performance.now()
-  console.log(e1-s1, e2-s2)
-  }, 1000)
-  
-  // console.log(await (await api.getEventWithID)(53579))
-}
-
 /**
  * 
  * @param {Number} eventID 
@@ -36,7 +22,10 @@ async function getEvent(eventID) {
 app.use("/", express.static("public"))
 
 app.get("/", (req, res)=>{
-  twing.render("main.html").then(out=>res.send(out))
+  twing.render("main.html", {
+    mainTeams: ["6627Y", "6627S"],
+    teams: ["6627A", "6627B", "6627C", "6627D", "6627X"]
+  }).then(out=>res.send(out))
 })
 
 app.get("/t/:teamNumber", async (req, res)=>{
@@ -60,10 +49,16 @@ app.get("/times/:eventID/:teamID", async (req, res)=>{
   twing.render("times.html", {teamNumber: teamData.number }).then(out=>res.send(out))
 })
 
-app.get("/getTeams/:eventID", async (req, res)=>{
+app.get("/getMatches/:eventID", async (req, res)=>{
   let eventID = req.params.eventID
-  // TODO: Remove teamID and just make the cache sort it
   res.send(await api.getMatches(eventID, 1))
+})
+
+app.get("/teams/:eventID", async (req, res)=>{
+  let eventID = req.params.eventID
+  const eventDataAPI = await api.getTeamsAtEvent(eventID)
+  if (!eventDataAPI) return res.status(404).send(`No event found with ID ${eventID}`)
+  res.send(eventDataAPI)
 })
 
 app.get('/team/:eventID/:teamID', async (req, res) => {

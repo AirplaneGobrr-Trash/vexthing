@@ -45,6 +45,12 @@ async function getMatchesC(eventID, divID = 1, teams = [], page = 1) {
     return data.data
 }
 
+async function getTeamsAtEventC(eventID) {
+    let dataRaw = await eApi.get(`/events/${eventID}/teams?per_page=100`)
+    let data = JSON.parse(dataRaw.data)
+    return data.data
+}
+
 // 6627Y = 139679
 // currentEvent = 53579
 
@@ -118,5 +124,6 @@ module.exports = {
     getMatches: cache(getMatchesC, cacheOptions),
     getEventWithID: cache(getEventWithIDC, cacheOptions),
     getTeam: cache(getTeamC, cacheOptions),
-    getTeamEvents: cache(getTeamEventsC, cacheOptions)
+    getTeamEvents: cache(getTeamEventsC, cacheOptions),
+    getTeamsAtEvent: cache(getTeamsAtEventC)
 }
