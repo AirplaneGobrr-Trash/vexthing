@@ -136,3 +136,4 @@ public/pictures/teams/*
 *.sqlite
 tmpData/*
 error.html
+config.json
