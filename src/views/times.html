@@ -5,10 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thing</title>
-    <link rel="stylesheet" href="/style/main.css">
+    <link rel="stylesheet" href="/static/style/main.css">
 </head>
 
 <body>
+    <label for="shift">Shift time:</label>
     <input type="number" id="shift">
 
     <h1 class="collapsible active">Our Matches:</h1>
@@ -42,7 +43,7 @@
         const eventID = splitURL.pop()
 
         async function m() {
-            let matchResponse = await fetch(`/getMatches/${eventID}/${divID}`)
+            let matchResponse = await fetch(`/api/event/matches/${eventID}/${divID}`)
             let matchData = await matchResponse.json()
             matchData = matchData.sort((a, b) => new Date(a.scheduled ?? a.started) - new Date(b.scheduled ?? b.started))
             console.log(matchData)
@@ -131,7 +132,7 @@
             }
         
             if (addedTeams.length != 0) return
-            let teamReponse = await fetch(`/teams/${eventID}`)
+            let teamReponse = await fetch(`/api/event/teams/${eventID}`)
             let teamData = await teamReponse.json()
             console.log("teamData", teamData)
             let teamDataSorted = teamData.sort((a,b)=> a.number-b.number)

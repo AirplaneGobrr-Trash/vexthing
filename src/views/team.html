@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{teamNumber}} - Team</title>
-    <link rel="stylesheet" href="/style/main.css">
+    <link rel="stylesheet" href="/static/style/main.css">
 </head>
 
 <body>
@@ -85,7 +85,7 @@
             note: document.getElementById("notes")
         }
 
-        let imgURL = `/data/team/${eventID}/${teamID}.png`
+        let imgURL = `/api/team/data/${eventID}/${teamID}.png`
         imageElm.src = imgURL
 
         uploadElm.onclick = () => {
@@ -93,7 +93,7 @@
             let file = pictureElm.files[0]
             let toSend = new FormData();
             toSend.append("file", file);
-            fetch(`/upload/${eventID}/${teamID}`, { method: "POST", body: toSend }).then((r) => {
+            fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: toSend }).then((r) => {
                 imageElm.src = `${imgURL}?${new Date().getTime()}`
             });
         }
@@ -123,8 +123,10 @@
                 }
                 console.log()
                 console.log(toSend)
-                fetch(`/upload/${eventID}/${teamID}`, { method: "POST", body: JSON.stringify(toSend), headers: { "Content-Type": "application/json"} }).then((r) => {
+                fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: JSON.stringify(toSend), headers: { "Content-Type": "application/json"} }).then((r) => {
                 })
+            } else {
+                window.location.reload()
             }
         }
 
@@ -140,7 +142,7 @@
         }
 
         async function loadData(){
-            let teamDataResponse = await fetch(`/data/team/${eventID}/${teamID}`)
+            let teamDataResponse = await fetch(`/api/team/data/${eventID}/${teamID}`)
             let teamData = await teamDataResponse.json()
             console.log(teamData)
 

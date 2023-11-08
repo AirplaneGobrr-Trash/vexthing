@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event selector</title>
-    <link rel="stylesheet" href="/style/main.css">
+    <link rel="stylesheet" href="/static/style/main.css">
 </head>
 <body>
     <h1 id="team"></h1>
@@ -17,7 +17,7 @@
         const teamNumber = splitURL.pop()
         teamNameElm.innerText = teamNumber
 
-        fetch("/getTeamEvents/{{teamID}}").then(async (r)=>{
+        fetch("/api/team/events/{{teamID}}").then(async (r)=>{
             let data = await r.json()
             console.log(data)
             for (let event of data) {

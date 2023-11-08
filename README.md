@@ -4,6 +4,10 @@ This is an app that helps with scouting!
 
 This app was built for the 2023-2024 Vex game (Over Under)
 
+# Help!
+
+[API Layout](/docs/apiRoutes.md)
+[How to](/docs/howTo.md)
 
 # Plans
 
