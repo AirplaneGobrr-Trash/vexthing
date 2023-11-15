@@ -1,6 +1,6 @@
 # READ!
 
-Make sure you add the layout you want [here](src/layout) Use the [example](src/layout.example.json) move and rename it to `/src/layout/181.json`
+Make sure you add the layout you want [here](/src/layout) Use the [example](/src/layout.example.json) move and rename it to `/src/layout/181.json`
 
 `/src/layout/<seasonID>.json`
 
