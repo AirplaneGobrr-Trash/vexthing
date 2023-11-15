@@ -11,7 +11,8 @@
 <body>
     <h1 id="teamName">{{teamNumber}}</h1>
     <hr>
-    <input id="lookup" type="text" style="width: 500px;" value="https://www.youtube.com/results?search_query={teamNumber}+over+under+vex+vrc">
+    <input id="lookup" type="text" style="width: 500px;"
+        value="https://www.youtube.com/results?search_query={teamNumber}+over+under+vex+vrc">
     <button id="open">Open</button> <a>(Use <b><em>{teamNumber}</em></b> to refer to the team number in the URL)</a>
     <hr>
 
@@ -22,45 +23,8 @@
     <hr>
 
     <form id="skills">
-        <label for="intake">Intake:</label>
-        <input type="checkbox" id="intake"><br>
 
-        <label for="push">Push:</label>
-        <input type="checkbox" id="push"><br>
-
-        <label for="wings">Wings:</label>
-        <input type="checkbox" id="wings"><br>
-
-        <hr>
-
-        <label for="autonF">Auton Far:</label>
-        <input type="checkbox" id="autonF"><br>
-
-        <label for="autonN">Auton Near:</label>
-        <input type="checkbox" id="autonN"><br>
-
-        <hr>
-
-        <label for="hangP">Hang passive:</label>
-        <input type="checkbox" id="hangP"><br>
-
-        <label for="hangB">Hang break:</label>
-        <input type="checkbox" id="hangB"><br>
-
-        <hr>
-
-        <label for="cata">Cata:</label>
-        <select id="cata">
-            <option value="arm">Arm</option>
-            <option value="flywheel">Flywheel</option>
-            <option value="other">Other</option>
-            <option value="none" selected>None</option>
-        </select>
-
-        <hr>
-
-        <label for="notes">Notes:</label><br>
-        <textarea id="notes"></textarea>
+        <div id="data"></div>
 
         <hr>
 
@@ -73,13 +37,20 @@
         const eventID = splitURL.pop()
         console.log(teamID)
 
+        let dataLayout = {}
+
+        let dataElms = {}
+
         const skillsElm = document.getElementById("skills")
+        const dataElm = document.getElementById("data")
         const imageElm = document.getElementById("image")
         const pictureElm = document.getElementById("updatePicture")
         const uploadElm = document.getElementById("upload")
 
         const lookupButtonElm = document.getElementById("open")
         const lookupValueElm = document.getElementById("lookup")
+
+        let isString = value => typeof value === 'string' || value instanceof String;
 
         if (localStorage.getItem("url")) {
             lookupValueElm.value = localStorage.getItem("url")
@@ -91,17 +62,20 @@
             window.open(url.replace("{teamNumber}", "{{teamNumber}}"), '_blank');
         }
 
-        const teamDataElms = {
-            cata: document.getElementById("cata"),
-            push: document.getElementById("push"),
-            wings: document.getElementById("wings"),
-            autonF: document.getElementById("autonF"),
-            autonN: document.getElementById("autonN"),
-            hangP: document.getElementById("hangP"),
-            hangB: document.getElementById("hangB"),
-            intake: document.getElementById("intake"),
-            note: document.getElementById("notes")
+        function decodeNumber(number) {
+            let layout = [1, 2, 4, 8, 10, 12, 14, 16, 18]; // Add more powers of 2 as needed
+            let decodedArray = [];
+
+            for (let i = layout.length - 1; i >= 0; i--) {
+                if (number >= layout[i]) {
+                    decodedArray.unshift(layout[i]);
+                    number -= layout[i];
+                }
+            }
+
+            return decodedArray;
         }
+
 
         let imgURL = `/api/team/data/${eventID}/${teamID}.png`
         imageElm.src = imgURL
@@ -120,101 +94,149 @@
             event.preventDefault()
             let subType = event.submitter.value.toLowerCase()
             if (subType == "save") {
-                let cataValue = teamDataElms.cata.options.selectedIndex +1
-                let hangValue = 0
-                let autonValue = 0
-                if (teamDataElms.hangB.checked) hangValue += 1
-                if (teamDataElms.hangP.checked) hangValue += 2
-
-                if (teamDataElms.autonF.checked) autonValue += 1
-                if (teamDataElms.autonN.checked) autonValue += 2
-
-                let toSend = {
-                    teamNumber: "{{teamNumber}}",
-                    intake: teamDataElms.intake.checked,
-                    push: teamDataElms.push.checked,
-                    wings: teamDataElms.wings.checked,
-                    auton: autonValue,
-                    hang: hangValue,
-                    cata: cataValue,
-                    notes: teamDataElms.note.value
+                let toSend = {}
+                console.log(dataElms)
+                for (let key in dataLayout) {
+                    if (dataElms[key]) {
+                        let val = dataElms[key].checked ?? dataElms[key]?.options?.selectedIndex ?? dataElms[key].value
+                        console.log(key, val)
+                        toSend[key] = val
+                    } else {
+                        let count = 0
+                        let res = 0
+                        for (let keyKey in dataLayout[key]) {
+                            count++
+                            let elm = dataElms[`${key}_${keyKey}`]
+                            if (elm.checked) {
+                                res += count ** 1
+                            }
+                        }
+                        toSend[key] = res
+                        console.log(key, res)
+                    }
                 }
-                console.log()
-                console.log(toSend)
-                fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: JSON.stringify(toSend), headers: { "Content-Type": "application/json"} }).then((r) => {
+                console.log("toSend", toSend)
+                fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: JSON.stringify(toSend), headers: { "Content-Type": "application/json" } }).then((r) => {
                 })
             } else {
                 window.location.reload()
             }
         }
 
-        teamDataElms.note.addEventListener('input', autoResize, false)
-
         function autoResize() {
-            let elm = teamDataElms.note
-            elm.style.height = 'auto';
-            elm.style.width = 'auto';
-            elm.style.height = elm.scrollHeight + 'px';
-            elm.style.width = elm.scrollWidth +50 + 'px';
-            console.log(elm)
+            // let elm = teamDataElms.note
+            // elm.style.height = 'auto';
+            // elm.style.width = 'auto';
+            // elm.style.height = elm.scrollHeight + 'px';
+            // elm.style.width = elm.scrollWidth +50 + 'px';
+            // console.log(elm)
         }
 
-        async function loadData(){
+        async function loadData() {
+            let dataLayoutResponse = await fetch(`/api/event/${eventID}/layout`)
+            dataLayout = await dataLayoutResponse.json()
+
             let teamDataResponse = await fetch(`/api/team/data/${eventID}/${teamID}`)
             let teamData = await teamDataResponse.json()
-            console.log(teamData)
 
-            switch(teamData.auton){
-                case 1: {
-                    teamDataElms.autonF.checked = true
-                    teamDataElms.autonN.checked = false
-                    break
+            console.log(dataLayout, teamData)
+
+            let before = null
+
+            for (let key in dataLayout) {
+                let data = dataLayout[key]
+
+                let dType = typeof data
+                if (isString(data)) dType = data.toLowerCase()
+
+                if (before && dataLayout[before]) {
+                    let dataBefore = dataLayout[before]
+                    console.log("Before", before, dataBefore)
+                    if (data != dataBefore) {
+                        let hr = document.createElement("hr")
+                        dataElm.append(hr)
+                    }
                 }
-                case 2: {
-                    teamDataElms.autonN.checked = true
-                    teamDataElms.autonF.checked = false
-                    break
-                }
-                case 3: {
-                    teamDataElms.autonF.checked = true
-                    teamDataElms.autonN.checked = true
-                    break
-                }
-                default: {
-                    teamDataElms.autonF.checked = false
-                    teamDataElms.autonN.checked = false
+
+                before = key
+
+                switch (dType) {
+                    case "boolean": {
+                        let label = document.createElement("label")
+                        let bool = document.createElement("input")
+                        let br = document.createElement("br")
+                        label.setAttribute("for", key)
+                        label.innerText = `${key}:`
+                        bool.id = key
+                        bool.type = "checkbox"
+                        if (teamData[key]) {
+                            bool.setAttribute("checked", true)
+                        }
+                        dataElms[key] = bool
+                        dataElm.append(label, bool, br)
+                        break
+                    }
+                    case "string": {
+                        let label = document.createElement("label")
+                        let string = document.createElement("textarea")
+                        let br = document.createElement("br")
+                        let br2 = document.createElement("br")
+                        label.setAttribute("for", key)
+                        label.innerText = `${key}:`
+                        string.id = key
+                        string.type = "text"
+                        if (teamData[key]) {
+                            string.value = teamData[key]
+                        }
+                        dataElms[key] = string
+                        dataElm.append(label, br, string, br2)
+                        break
+                    }
+                    case "object": {
+                        if (Array.isArray(data)) {
+                            let label = document.createElement("label")
+                            let arr = document.createElement("select")
+                            let br = document.createElement("br")
+                            label.setAttribute("for", key)
+                            label.innerText = `${key}:`
+                            arr.id = key
+                            for (let keyKey of data) {
+                                let opt = document.createElement("option")
+                                opt.innerText = keyKey
+                                opt.id = `${key}_${keyKey}`
+                                arr.append(opt)
+                            }
+                            if (teamData[key]) {
+                                arr.options.selectedIndex = teamData[key]
+                            }
+                            dataElms[key] = arr
+                            dataElm.append(label, arr, br)
+                        } else {
+                            let decoded = decodeNumber(teamData[key])
+                            console.log("decode", decoded, teamData[key])
+                            let br2 = document.createElement("br")
+                            let toAdd = []
+                            let c = 0
+                            for (let keyKey in data) {
+                                c++
+                                let objLable = document.createElement("label")
+                                let obj = document.createElement("input")
+                                let br = document.createElement("br")
+                                obj.type = "checkbox"
+                                objLable.innerText = `${key} ${keyKey}`
+                                dataElms[`${key}_${keyKey}`] = obj
+                                if (decoded.includes(c)) {
+                                    obj.setAttribute("checked", true)
+                                }
+                                toAdd.push(objLable, obj, br)
+                            }
+                            dataElm.append(...toAdd)
+                        }
+                        break
+                    }
                 }
             }
 
-
-            switch(teamData.hang){
-                case 2: {
-                    teamDataElms.hangP.checked = true
-                    teamDataElms.hangB.checked = false
-                    break
-                }
-                case 1: {
-                    teamDataElms.hangB.checked = true
-                    teamDataElms.hangP.checked = false
-                    break
-                }
-                case 3: {
-                    teamDataElms.hangP.checked = true
-                    teamDataElms.hangB.checked = true
-                    break
-                }
-                default: {
-                    teamDataElms.hangP.checked = false
-                    teamDataElms.hangB.checked = false
-                }
-            }
-
-            // GET: teamDataElms.cata.options.selectedIndex
-            teamDataElms.cata.options.selectedIndex = teamData.cata-1
-            teamDataElms.intake.checked = teamData.intake
-            teamDataElms.push.checked = teamData.push
-            teamDataElms.wings.checked = teamData.wings
-            teamDataElms.note.value = teamData.notes ?? ""
             autoResize()
 
         }

@@ -1,4 +1,5 @@
 const dataHelper = require("./dataHelper")
+const fs = require("fs")
 const eventDatas = {}
 
 /**
@@ -13,7 +14,13 @@ async function getEventData(eventID) {
   return eventDatas[eventID]
 }
 
+async function getSeasonLayout(seasonID){
+  let data = fs.readFileSync(`./layout/${seasonID}.json`)
+  return JSON.parse(data)
+}
+
 module.exports = {
     getEventData,
-    eventDatas
+    eventDatas,
+    getSeasonLayout
 }

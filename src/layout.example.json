@@ -1,0 +1,17 @@
+{
+    "Intake": "Boolean",
+    "Push": "Boolean",
+    "Wings": "Boolean",
+    "Auton": {
+        "Far": "Boolean",
+        "Close": "Boolean"
+    },
+    "Hang": {
+        "Passive": "Boolean",
+        "Break": "Boolean"
+    },
+    "Cata": [
+        "None", "Arm", "Flywheel", "Other"
+    ],
+    "Notes": "String"
+}

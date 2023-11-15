@@ -38,9 +38,13 @@ app.get("/times/:eventID/:divID/:teamID", async (req, res) => {
 
 app.get('/team/:eventID/:teamID', async (req, res) => {
   let teamID = req.params.teamID
+  let eventID = req.params.eventID
 
   const team = await rApi.team(teamID)
   const teamData = await team.getData()
+
+  let eventData = await rApi.event(eventID).getData()
+  if (!eventData) return res.status(404).send(`No event found with ID ${eventID}`)
 
   if (!teamData) return res.status(404).send(`No team found with ID ${teamID}`)
   twing.render("team.html", { teamNumber: teamData.number }).then(out => res.send(out))

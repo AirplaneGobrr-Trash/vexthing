@@ -50,6 +50,8 @@ router.post("/upload/:eventID/:teamID", upload.single("file"), async (req, res) 
   let eventID = req.params.eventID
   let teamID = req.params.teamID
   let event = await utils.getEventData(eventID)
+  const teamData = await (await rApi.team(teamID)).getData()
+
   if (req?.file?.buffer) {
     await event.updateTeamData(teamID, {
       picture: req.file.buffer,
@@ -57,9 +59,12 @@ router.post("/upload/:eventID/:teamID", upload.single("file"), async (req, res) 
     })
     res.send("Set picture!")
   }
-  if (req?.body.teamNumber) {
+  if (req?.body) {
     let data = req.body
-    await event.updateTeamData(teamID, data)
+    await event.updateTeamData(teamID, {
+      teamNumber: teamData.number,
+      ...data
+    })
     res.send("Updated!")
   }
 })

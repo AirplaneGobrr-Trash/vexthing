@@ -1,5 +1,6 @@
 const router = require("express").Router()
 const rApi = require("../helpers/robotApi")
+const utils = require("../helpers/utils")
 
 router.get("/matches/:eventID/:divID", async (req, res)=>{
     let eventID = req.params.eventID
@@ -19,6 +20,13 @@ router.get("/teams/:eventID", async (req, res)=>{
 
   if (!eventTeams) return res.status(404).send(`No event found with ID ${eventID}`)
   res.send(eventTeams)
+})
+
+router.get("/:eventID/layout", async (req, res)=>{
+  let eventID = req.params.eventID
+
+  let eventData = await (await rApi.event(eventID)).getData()
+  res.json(await utils.getSeasonLayout(eventData.season.id))
 })
 
 module.exports = router

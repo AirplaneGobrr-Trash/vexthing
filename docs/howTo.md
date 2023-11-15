@@ -1,3 +1,13 @@
+# READ!
+
+Make sure you add the layout you want [here](src/layout) Use the [example](src/layout.example.json) move and rename it to `/src/layout/181.json`
+
+`/src/layout/<seasonID>.json`
+
+181 is the Season ID for `Over Under` (for VRC)
+
+182 is the Season ID for `Over Under` (for VEX U)
+
 # Main page (`/`)
 
 ![The main page with teams](imgs/main.png)

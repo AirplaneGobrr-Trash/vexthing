@@ -8,5 +8,4 @@ router.use("/time", timeAPI)
 router.use("/team", teamAPI)
 router.use("/event", eventAPI)
 
-
 module.exports = router

@@ -137,3 +137,4 @@ public/pictures/teams/*
 tmpData/*
 error.html
 config.json
+src/layout/*.json

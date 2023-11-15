@@ -1,3 +1,4 @@
+const rApi = require("./robotApi")
 const knex = require('knex')({
     client: 'sqlite3', // or 'better-sqlite3'
     useNullAsDefault: true,
@@ -8,32 +9,98 @@ const knex = require('knex')({
     }
 });
 const fs = require("fs")
+let isString = value => typeof value === 'string' || value instanceof String;
 
 class eventData {
-    constructor(eventID){
+    constructor(eventID) {
         this.eventID = eventID
         this.eventDatabase = `event-${this.eventID}`
     }
 
     async create() {
+        let eventData = await (await rApi.event(this.eventID)).getData()
+        let dataRaw = fs.readFileSync(`./layout/${eventData.season.id}.json`)
+        let dataLayout = JSON.parse(dataRaw)
         if (!await knex.schema.hasTable(this.eventDatabase)) {
-            await knex.schema.createTable(this.eventDatabase, (table)=>{
+            await knex.schema.createTable(this.eventDatabase, async (table) => {
                 table.bigInteger("teamID").primary() // 139679
                 table.text("teamNumber") // 6627Y
-                table.boolean("intake") // True - False
-                table.boolean("push") // True - False
-                table.boolean("wings") // True - False
-                table.integer("auton") // ["far", "near"]
-                table.integer("hang") // ["passive", "break"]
-                table.integer("cata") // ["arm", "flywheel", "other"]
-                table.text("notes") // Bla bla xyz bla bla
                 table.specificType("picture", "LONGBLOB") // <Picture of robot>
+
+                for (let key in dataLayout) {
+                    let data = dataLayout[key]
+
+                    let dType = typeof data
+                    if (isString(data)) dType = data.toLowerCase()
+
+                    switch (dType) {
+                        case "boolean": {
+                            table.boolean(key)
+                            break
+                        }
+                        case "string": {
+                            table.string(key, 9999999)
+                            break
+                        }
+                        case "object": {
+                            table.integer(key)
+                            break
+                        }
+                    }
+                }
+
+                // table.boolean("intake") // True - False
+                // table.boolean("push") // True - False
+                // table.boolean("wings") // True - False
+                // table.integer("auton") // ["far", "near"]
+                // table.integer("hang") // ["passive", "break"]
+                // table.integer("cata") // ["arm", "flywheel", "other"]
+                // table.text("notes") // Bla bla xyz bla bla
             })
             return true
         }
+        let cols = await knex.table(this.eventDatabase).columnInfo()
+
+        knex.schema.table(this.eventDatabase, async (table) => {
+            let added = []
+            for (let key in dataLayout) {
+                added.push(key)
+                if (cols[key]) {
+                    // TODO: Check if this is the right type
+                    continue
+                }
+                let data = dataLayout[key]
+
+                let dType = typeof data
+                if (isString(data)) dType = data.toLowerCase()
+
+                console.log("type", key, dType)
+
+                switch (dType) {
+                    case "boolean": {
+                        knex.schema.table(this.eventDatabase).create
+                        table.boolean(key)
+                        break
+                    }
+                    case "string": {
+                        table.string(key, 9999999)
+                        break
+                    }
+                    case "object": {
+                        table.integer(key)
+                        break
+                    }
+                }
+            }
+            for (let col in cols) {
+                if (added.includes(col)) continue
+                table.dropColumn(col)
+            }
+        })
+
         return false
     }
-    async getTeamData(teamID){
+    async getTeamData(teamID) {
         await this.create()
         return await knex(this.eventDatabase).where({ teamID: teamID }).first()
     }
@@ -64,5 +131,6 @@ class eventData {
 }
 
 module.exports = {
-    eventData
+    eventData,
+    dataLayout
 }
