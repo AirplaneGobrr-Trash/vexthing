@@ -10,8 +10,13 @@
 
 <body>
     <h1 id="teamName">{{teamNumber}}</h1>
+    <hr>
+    <input id="lookup" type="text" style="width: 500px;" value="https://www.youtube.com/results?search_query={teamNumber}+over+under+vex+vrc">
+    <button id="open">Open</button> <a>(Use <b><em>{teamNumber}</em></b> to refer to the team number in the URL)</a>
+    <hr>
+
     <img id="image" alt="Robot" style="height: 500px;" />
-    <br>
+    <hr>
     <input type="file" id="updatePicture" /><button id="upload">Upload</button>
 
     <hr>
@@ -72,6 +77,19 @@
         const imageElm = document.getElementById("image")
         const pictureElm = document.getElementById("updatePicture")
         const uploadElm = document.getElementById("upload")
+
+        const lookupButtonElm = document.getElementById("open")
+        const lookupValueElm = document.getElementById("lookup")
+
+        if (localStorage.getItem("url")) {
+            lookupValueElm.value = localStorage.getItem("url")
+        }
+
+        lookupButtonElm.onclick = () => {
+            let url = lookupValueElm.value
+            localStorage.setItem("url", url)
+            window.open(url.replace("{teamNumber}", "{{teamNumber}}"), '_blank');
+        }
 
         const teamDataElms = {
             cata: document.getElementById("cata"),

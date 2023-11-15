@@ -63,11 +63,8 @@
                         // console.log(alli.color, team)
                         let teamNumber = team.team.name
                         if (teamNumber == "{{teamNumber}}") ourColor = alli.color
-                        if (!addedTeams.includes(teamNumber)) {
-                            addedTeams.push(teamNumber)
-                            const h1 = document.createElement("h1")
-                            h1.innerHTML = `<a href="/team/${eventID}/${team.team.id}" target="_blank">${teamNumber}</a>`
-                            teamsElm.appendChild(h1)
+                        if (!addedTeams.find((v)=>v.teamID == team.team.id)) {
+                            addedTeams.push({ teamID: team.team.id, teamNumber: teamNumber })
                         }
                         teamInfo.push({ teamNumber: teamNumber, teamID: team.team.id, color: alli.color })
                     }
@@ -130,17 +127,27 @@
                 }
                 matchesElm.append(divElm.cloneNode(true))
             }
-        
-            if (addedTeams.length != 0) return
-            let teamReponse = await fetch(`/api/event/teams/${eventID}`)
-            let teamData = await teamReponse.json()
-            console.log("teamData", teamData)
-            let teamDataSorted = teamData.sort((a,b)=> a.number-b.number)
-            for (let team of teamDataSorted) {
-                console.log(team)
+            
+            if (addedTeams.length == 0) {
+                let teamReponse = await fetch(`/api/event/teams/${eventID}`)
+                let teamData = await teamReponse.json()
+                console.log("teamData", teamData)
+                addedTeams = teamData.map((v)=> {
+                    return {teamID: v.id, teamNumber: v.number}
+                })
+                console.log("new", addedTeams)
+            }
+
+            console.log("eek!", addedTeams)
+
+            for (let team of addedTeams) {
+                console.log("Adding team!", team)
+                const div = document.createElement("div")
                 const h1 = document.createElement("h1")
-                h1.innerHTML = `<a href="/team/${eventID}/${team.id}" target="_blank">${team.number}</a>`
-                teamsElm.appendChild(h1)
+                div.id = team.teamNumber
+                h1.innerHTML = `<a href="/team/${eventID}/${team.teamID}" target="_blank">${team.teamNumber}</a>`
+                div.appendChild(h1)
+                teamsElm.appendChild(div)
             }
         }
         m()
