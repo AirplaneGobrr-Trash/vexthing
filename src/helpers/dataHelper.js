@@ -1,4 +1,5 @@
-const rApi = require("./robotApi")
+let rApi = null
+if (module.parent.filename.split("\\").pop() != "robotApi") rApi = require("./robotApi")
 const knex = require('knex')({
     client: 'sqlite3', // or 'better-sqlite3'
     useNullAsDefault: true,
@@ -78,7 +79,6 @@ class eventData {
 
                 switch (dType) {
                     case "boolean": {
-                        knex.schema.table(this.eventDatabase).create
                         table.boolean(key)
                         break
                     }
@@ -130,7 +130,33 @@ class eventData {
     }
 }
 
+
+async function rAPI_cacheCheck() {
+    try {
+        if (!await knex.schema.hasTable("cache")) await knex.schema.createTable("cache", (table) => {
+            table.text("url")
+            table.date("created")
+            table.text("data")
+        })
+    } catch (e) { }
+}
+
+async function rAPI_findCache(url) {
+    await rAPI_cacheCheck()
+    return await knex("cache").where("url", url).first()
+}
+
+async function rAPI_updateCache(url, data) {
+    await rAPI_cacheCheck()
+    await knex("cache").where("url", url).delete()
+    await knex("cache").insert({ url: url, created: new Date(), data: data })
+}
+
+
 module.exports = {
     eventData,
-    dataLayout
+    robotAPICache: {
+        find: rAPI_findCache,
+        update: rAPI_updateCache
+    }
 }

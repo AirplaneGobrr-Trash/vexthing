@@ -58,6 +58,10 @@
             for (let match of matchData) {
                 let ourColor = null
                 let teamInfo = []
+
+                let redScore = null
+                let blueScore = null
+
                 for (let alli of match.alliances) {
                     for (let team of alli.teams) {
                         // console.log(alli.color, team)
@@ -67,6 +71,7 @@
                             addedTeams.push({ teamID: team.team.id, teamNumber: teamNumber })
                         }
                         teamInfo.push({ teamNumber: teamNumber, teamID: team.team.id, color: alli.color })
+                        if (alli.color == "red") redScore = alli?.score; else if (alli.color == "blue") blueScore = alli?.score
                     }
                 }
                 let start = new Date(match.scheduled ?? match.started)
@@ -80,9 +85,6 @@
 
                 console.log(match)
                 console.log("Shifted", start.toLocaleTimeString(), currDate.toLocaleTimeString(), toShift, totalShift)
-                let ourPeoples = teamInfo.filter((e) => e.color == ourColor)
-                let notOurPeopels = teamInfo.filter((e) => e.color != ourColor)
-
 
                 let blueHTML = ""
                 let redHTML = ""
@@ -115,8 +117,8 @@
                 ${colorHTML}
                 <p>Time Until (Minutes): ${(milliUntillMatch / 1000) / 60}</p>
                 <p>Start time: ${start.toLocaleTimeString()}</p>
-                <p><a style="color:${blueColor};">Blue</a>: ${blueHTML}</p>
-                <p><a style="color:${redColor};">Red</a>: ${redHTML}</p>
+                <p><a style="color:${blueColor};">Blue</a>: (${blueScore}) ${blueHTML}</p>
+                <p><a style="color:${redColor};">Red</a>: (${redScore}) ${redHTML}</p>
                 `
                 const divElm = document.createElement("div")
                 divElm.innerHTML = html
@@ -127,7 +129,7 @@
                 }
                 matchesElm.append(divElm.cloneNode(true))
             }
-            
+
             if (addedTeams.length == 0) {
                 let teamReponse = await fetch(`/api/event/teams/${eventID}`)
                 let teamData = await teamReponse.json()

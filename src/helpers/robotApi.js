@@ -1,12 +1,11 @@
 const axios = require("axios")
-// const cache = require("function-cache")
 const fs = require("fs")
-fs.mkdirSync("tmpData", { recursive: true })
 const apiKey = require("../config.json").robotEventsAPI
 const eApi = new axios.Axios({baseURL: "https://www.robotevents.com/api/v2/", headers: {
     Authorization: `Bearer ${apiKey}`
 }})
 
+const dataHelper = require("./dataHelper")
 
 /**
  * @typedef metaData
@@ -70,24 +69,28 @@ const eApi = new axios.Axios({baseURL: "https://www.robotevents.com/api/v2/", he
  * @property {String} event_type
  */
 
-const urlCache = []
+async function doGet(url, refreshTimeMins = 60){
+    console.log("[GET REQUEST]", url)
+    // console.log("DEBUG", (new Error()));
 
-async function doGet(url){
-    console.log("\n[GET REQUEST]", url)
-    //console.log("DEBUG", (new Error()));
-
-    let cache = urlCache.find((v)=> v.url == url)
+    let cache = await dataHelper.robotAPICache.find(url)
     if (cache) {
-        console.log("Sending cached result!")
-        return cache.data
+        let t1 = new Date()-new Date(cache.created)
+        let t2 = refreshTimeMins*60*1000
+        if ((new Date()-new Date(cache.created)) <= (refreshTimeMins*60*1000)) {
+            console.log("Sending cached result! Refresh in", (t2 - t1)/1000, "seconds")
+            return JSON.parse(cache.data)
+        } else {
+            console.log("Cache needs to be refreshed!")
+        }
     }
 
-    console.log("Uncached URL! Caching!")
+    console.log("Uncached URL/Old result, Caching it!")
 
     let dataRaw = await eApi.get(url)
     try {
         let data = JSON.parse(dataRaw.data)
-        urlCache.push({url: url, created: new Date(), data: data})
+        await dataHelper.robotAPICache.update(url, data)
         return data
     } catch (e) {
         console.log(e)
@@ -105,15 +108,15 @@ class eventC {
      * @returns {Promise<EventWithID>}
      */
     async getData() {
-        let data = await doGet(`/events/${this.eventID}/`)
+        let data = await doGet(`/events/${this.eventID}`, 1)
         return data
     }
     async getMacthes(divID, page = 1) {
-        let data = await doGet(`/events/${this.eventID}/divisions/${divID}/matches?page=${page}`)
+        let data = await doGet(`/events/${this.eventID}/divisions/${divID}/matches?page=${page}&per_page=100`,2)
         return data.data
     }
     async getTeams(){
-        let data = await doGet(`/events/${this.eventID}/teams?per_page=100`)
+        let data = await doGet(`/events/${this.eventID}/teams?per_page=100`, 60)
         return data.data
     }
 }
@@ -146,7 +149,7 @@ class teamC {
     async getWithNumber(number) {
         if (this.teamDataCache) return this.teamDataCache
         let data = await doGet(`/teams?number=${number}`)
-        if (data?.meta?.total != 1 && !data.data[0]) {
+        if (data?.meta?.total != 1 && !data?.data) {
             return null
         }
         this.teamDataCache = data.data[0]
