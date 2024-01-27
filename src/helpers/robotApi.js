@@ -5,7 +5,7 @@ const eApi = new axios.Axios({baseURL: "https://www.robotevents.com/api/v2/", he
     Authorization: `Bearer ${apiKey}`
 }})
 
-const dataHelper = require("./dataHelper")
+const robotAPICache = require("./cacheHelper")
 
 /**
  * @typedef metaData
@@ -73,7 +73,7 @@ async function doGet(url, refreshTimeMins = 60){
     console.log("[GET REQUEST]", url)
     // console.log("DEBUG", (new Error()));
 
-    let cache = await dataHelper.robotAPICache.find(url)
+    let cache = await robotAPICache.find(url)
     if (cache) {
         let t1 = new Date()-new Date(cache.created)
         let t2 = refreshTimeMins*60*1000
@@ -90,7 +90,7 @@ async function doGet(url, refreshTimeMins = 60){
     let dataRaw = await eApi.get(url)
     try {
         let data = JSON.parse(dataRaw.data)
-        await dataHelper.robotAPICache.update(url, data)
+        await robotAPICache.update(url, data)
         return data
     } catch (e) {
         console.log(e)

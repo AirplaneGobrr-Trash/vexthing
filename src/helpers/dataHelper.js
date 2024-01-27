@@ -1,14 +1,6 @@
-let rApi = null
-if (module.parent.filename.split("\\").pop() != "robotApi") rApi = require("./robotApi")
-const knex = require('knex')({
-    client: 'sqlite3', // or 'better-sqlite3'
-    useNullAsDefault: true,
-    connection: {
-        filename: "./data.sqlite",
-        charset: 'utf8mb4',
-        collate: 'utf8mb4_unicode_ci'
-    }
-});
+let rApi = require("./robotApi")
+console.log(module.parent.filename.split("\\").pop())
+const knex = require("./knex")
 const fs = require("fs")
 let isString = value => typeof value === 'string' || value instanceof String;
 
