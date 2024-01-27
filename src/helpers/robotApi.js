@@ -164,7 +164,7 @@ class teamC {
     async getEvents() {
         await this.check()
         let startDate = new Date()
-        startDate.setMonth(3, 1)
+        startDate.setFullYear(2023, 3, 1) // TODO: fix this to move to the year?
         let data = await doGet(`/events?team=${this.teamID}&start=${startDate?.toDateString()}&per_page=100`)
         return data.data
     }
