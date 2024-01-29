@@ -1,5 +1,4 @@
 let rApi = require("./robotApi")
-console.log(module.parent.filename.split("\\").pop())
 const knex = require("./knex")
 const fs = require("fs")
 let isString = value => typeof value === 'string' || value instanceof String;

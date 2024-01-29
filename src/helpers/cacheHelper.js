@@ -1,7 +1,5 @@
 const knex = require("./knex")
 
-console.log("knex",knex)
-
 async function rAPI_cacheCheck() {
     try {
         if (!await knex.schema.hasTable("cache")) await knex.schema.createTable("cache", (table) => {
