@@ -12,6 +12,7 @@ router.get("/events/:teamID", async (req, res) => {
     res.send(events)
 })
 
+// TODO: Make this a "BATCH" to prevent sending so many requests
 router.get("/data/:eventID/:teamID", async (req, res) => {
     let eventID = req.params.eventID
     let teamID = req.params.teamID
