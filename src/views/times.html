@@ -133,17 +133,23 @@
             m()
         }
 
-        async function checkForData(teamID) {
+        async function checkForData(teamIDs) {
             return new Promise((resolve, reject) => {
                 try {
-                    fetch(`/api/team/data/${eventID}/${teamID}`).then(r => r.json()).then(js => {
-                        resolve(Object.keys(js).length != 0)
+                    fetch(`/api/team/data/${eventID}`, {
+                        body: JSON.stringify({ teamIDs: teamIDs}),
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        method: "POST"
+                    }).then(r => r.json()).then(js => {
+                        resolve(js)
                     })
 
-                    setTimeout(() => { resolve(false) }, 5000)
+                    setTimeout(() => { resolve(null) }, 5000)
 
                 } catch (e) {
-                    resolve(false)
+                    resolve(null)
                 }
             })
         }
@@ -224,6 +230,12 @@
                     case "red": colorHTML = `<h2 style="color: ${redColor};">We are red</h2>`; break;
                 }
 
+                if (blueScore > redScore) {
+                    blueScore = `<a style="color:yellow;">${blueScore}</a>`
+                } else {
+                    redScore = `<a style="color:yellow;">${redScore}</a>`
+                }
+
                 const html = `
                 <h1>${match.name}</h1>
                 ${colorHTML}
@@ -277,6 +289,7 @@
 
             console.log("Adding teams to list!")
             let ranksData = await getRanks()
+            let teamsData = await checkForData(Object.keys(addedElms))
             console.log(ranksData)
             for (let teamID in addedElms) {
                 let aElm = addedElms[teamID]
@@ -291,7 +304,7 @@
                 }
 
                 let color = "red"
-                if (await checkForData(teamID)) color = "green"
+                if (teamsData[teamID] != null) color = "green"
                 aElm.style.color = color
                 console.log("Added", teamID)
             }
