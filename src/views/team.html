@@ -87,6 +87,7 @@
             toSend.append("file", file);
             fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: toSend }).then((r) => {
                 imageElm.src = `${imgURL}?${new Date().getTime()}`
+                alert("Uploaded image!")
             });
         }
 
@@ -117,6 +118,7 @@
                 }
                 console.log("toSend", toSend)
                 fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: JSON.stringify(toSend), headers: { "Content-Type": "application/json" } }).then((r) => {
+                    alert("Updated data!")
                 })
             } else {
                 window.location.reload()

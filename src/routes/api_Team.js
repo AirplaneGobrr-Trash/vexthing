@@ -103,7 +103,7 @@ router.post("/upload/:eventID/:teamID", upload.single("file"), async (req, res) 
       picture: req.file.buffer,
       teamID: teamID
     })
-    res.send("Set picture!")
+    return res.send("Set picture!")
   }
   if (req?.body) {
     let data = req.body
@@ -111,7 +111,7 @@ router.post("/upload/:eventID/:teamID", upload.single("file"), async (req, res) 
       teamNumber: teamData.number,
       ...data
     })
-    res.send("Updated!")
+    return res.send("Updated!")
   }
 })
 
