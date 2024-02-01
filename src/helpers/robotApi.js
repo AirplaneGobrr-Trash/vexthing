@@ -115,8 +115,12 @@ class eventC {
         let data = await doGet(`/events/${this.eventID}/divisions/${divID}/matches?page=${page}&per_page=100`,2)
         return data.data
     }
-    async getTeams(){
-        let data = await doGet(`/events/${this.eventID}/teams?per_page=100`, 60)
+    async getTeams(page = 1){
+        let data = await doGet(`/events/${this.eventID}/teams?page=${page}&per_page=100`, 60)
+        return data.data
+    }
+    async getRankings(divID, page = 1) {
+        let data = await doGet(`/events/${this.eventID}/divisions/${divID}/rankings?page=${page}&per_page=100`, 1)
         return data.data
     }
 }

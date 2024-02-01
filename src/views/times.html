@@ -53,16 +53,23 @@
 
         async function checkForData(teamID) {
             return new Promise((resolve, reject) => {
-                let hasData = false
-                fetch(`/api/team/data/${eventID}/${teamID}`).then(r=>r.json()).then(js=>{
-                    if (Object.keys(js).length != 0) hasData = true
-                    resolve(hasData)
-                })
-                setTimeout(() => {
+                try {
+                    fetch(`/api/team/data/${eventID}/${teamID}`).then(r=>r.json()).then(js=>{
+                        resolve(Object.keys(js).length != 0)
+                    })
+
+                    setTimeout(()=>{ resolve(false) }, 5000)
+
+                } catch (e) {
                     resolve(false)
-                }, 1000);
+                }
             })
-            
+        }
+
+        async function getRanks() {
+            let rankingsResponse = await fetch(`/api/event/ranks/${eventID}/${divID}`)
+            let rankingsData = await rankingsResponse.json()
+            return rankingsData
         }
 
         async function m() {
@@ -186,11 +193,25 @@
                 teamsElm.appendChild(div)
             }
 
+            console.log("Adding teams to list!")
+            let ranksData = await getRanks()
+            console.log(ranksData)
             for (let teamID in addedElms) {
                 let aElm = addedElms[teamID]
+                console.log("Adding", teamID)
+
+                if (ranksData.length != 0) {
+                    console.log("Adding rank!")
+                    let rankData = ranksData.find((v=>v.team.id==teamID))
+                    if (!rankData) break
+                    console.log(rankData)
+                    aElm.innerText = `${rankData.rank}. ${aElm.innerText}`
+                }
+
                 let color = "red"
                 if (await checkForData(teamID)) color = "green"
                 aElm.style.color = color
+                console.log("Added", teamID)
             }
         }
         m()

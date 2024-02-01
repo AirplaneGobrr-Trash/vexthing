@@ -29,4 +29,15 @@ router.get("/:eventID/layout", async (req, res)=>{
   res.json(await utils.getSeasonLayout(eventData.season.id))
 })
 
+
+router.get("/ranks/:eventID/:divID", async (req, res)=>{
+  let eventID = req.params.eventID
+  let divID = req.params.divID
+
+  let event = await rApi.event(eventID)
+  let rankingData = await event.getRankings(divID)
+
+  res.send(rankingData)
+})
+
 module.exports = router
