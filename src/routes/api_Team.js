@@ -44,6 +44,7 @@ router.get("/data/:eventID/:teamID", async (req, res) => {
 })
 
 router.post("/data/:eventID", async (req, res) => {
+  console.log("Running batch request!")
   let eventID = req.params.eventID
 
   let data = req.body
@@ -57,16 +58,25 @@ router.post("/data/:eventID", async (req, res) => {
   for (let teamID of teamIDs) {
     let team = await rApi.team(teamID)
     let teamData = team.getData()
+
+    back[teamID] = null
+
     if (!teamData) {
-      back[teamID] = null
       continue
     }
 
     let eventStoredData = await utils.getEventData(eventID)
     let teamStoredData = await eventStoredData.getTeamData(teamID)
-    back[teamID] = teamStoredData
+    if (teamStoredData) {
+      let copy = JSON.parse(JSON.stringify(teamStoredData))
+      console.log(copy)
+      delete copy.picture
+      back[teamID] = copy ?? null
+    }
   }
-  return res.send(back)
+  console.log("Done!")
+  console.log(back)
+  return res.json(back)
 
   let teamID = req.params.teamID
   let imgMode = req.query.picture ?? teamID.includes(".png")

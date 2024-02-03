@@ -146,8 +146,6 @@
                         resolve(js)
                     })
 
-                    setTimeout(() => { resolve(null) }, 5000)
-
                 } catch (e) {
                     resolve(null)
                 }
@@ -290,7 +288,7 @@
             console.log("Adding teams to list!")
             let ranksData = await getRanks()
             let teamsData = await checkForData(Object.keys(addedElms))
-            console.log(ranksData)
+            console.log("rank and teams", ranksData, teamsData)
             for (let teamID in addedElms) {
                 let aElm = addedElms[teamID]
                 console.log("Adding", teamID)
@@ -304,7 +302,7 @@
                 }
 
                 let color = "red"
-                if (teamsData[teamID] != null) color = "green"
+                if (teamsData && teamsData[teamID] != null) color = "green"
                 aElm.style.color = color
                 console.log("Added", teamID)
             }
