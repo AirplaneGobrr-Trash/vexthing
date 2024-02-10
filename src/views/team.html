@@ -194,6 +194,22 @@
                         dataElm.append(label, br, string, br2)
                         break
                     }
+                    case "number": {
+                        let label = document.createElement("label")
+                        let num = document.createElement("input")
+                        let br = document.createElement("br")
+                        let br2 = document.createElement("br")
+                        label.setAttribute("for", key)
+                        label.innerText = `${key}:`
+                        num.id = key
+                        num.type = "number"
+                        if (teamData[key]) {
+                            num.value = teamData[key]
+                        }
+                        dataElms[key] = num
+                        dataElm.append(label, br, num, br2)
+                        break
+                    }
                     case "object": {
                         if (Array.isArray(data)) {
                             let label = document.createElement("label")

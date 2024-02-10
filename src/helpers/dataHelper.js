@@ -81,6 +81,10 @@ class eventData {
                         table.integer(key)
                         break
                     }
+                    case "number": {
+                        table.integer(key)
+                        break
+                    }
                 }
             }
             for (let col in cols) {

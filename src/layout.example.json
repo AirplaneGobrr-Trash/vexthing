@@ -10,8 +10,13 @@
         "Passive": "Boolean",
         "Break": "Boolean"
     },
+    "HangType": [ "None", "A", "B", "C","D","E","F","G","H","I","J"],
     "Cata": [
         "None", "Arm", "Flywheel", "Other"
     ],
+    "DrivingType": [ "None", "Defense", "Offence", "Both", "Both-Defense", "Both-Offence" ],
+    "StatesQual": "Boolean",
+    "WorldQual": "Boolean",
+    "Skills": "Number",
     "Notes": "String"
 }
