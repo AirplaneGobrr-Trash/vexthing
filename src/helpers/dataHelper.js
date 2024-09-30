@@ -19,27 +19,34 @@ class eventData {
                 table.text("teamNumber") // 6627Y
                 table.specificType("picture", "LONGBLOB") // <Picture of robot>
 
-                for (let key in dataLayout) {
-                    let data = dataLayout[key]
+                function add(dataIn, start="") {
+                    for (let key in dataIn) {
+                        let data = dataIn[key]
 
-                    let dType = typeof data
-                    if (isString(data)) dType = data.toLowerCase()
+                        let dType = typeof data
+                        if (isString(data)) dType = data.toLowerCase()
 
-                    switch (dType) {
-                        case "boolean": {
-                            table.boolean(key)
-                            break
-                        }
-                        case "string": {
-                            table.string(key, 9999999)
-                            break
-                        }
-                        case "object": {
-                            table.integer(key)
-                            break
+                        switch (dType) {
+                            case "boolean": {
+                                table.boolean(`${start}${key}`)
+                                break
+                            }
+                            case "string": {
+                                table.string(`${start}${key}`, 9999999)
+                                break
+                            }
+                            case "number": {
+                                table.integer(`${start}${key}`, 9999999)
+                                break
+                            }
+                            case "object": {
+                                add(dataIn[key], `${start}${key}-`)
+                                break
+                            }
                         }
                     }
                 }
+                add(dataLayout, "")
 
                 // table.boolean("intake") // True - False
                 // table.boolean("push") // True - False

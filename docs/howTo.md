@@ -51,7 +51,7 @@ The `Teams` drop down has all the teams with their links
 
 **When clicking on any team it will open it in a new tab!**
 
-# Scouting Team (`\team/<eventID>/<teamID>`)
+# Scouting Team (`/team/<eventID>/<teamID>`)
 
 ![Team info](imgs/teamInfo.png)
 
