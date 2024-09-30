@@ -29,17 +29,24 @@
 
     <h1 class="collapsible">Teams:</h1>
     <div class="content">
-        <h2><a style="color:blue;">Blue</a> = Loading, <a style="color: red;">Red</a> = No data, <a
-                style="color: green;">Green</a> = has data</h2>
+        <h2><a style="color:blue;">Blue</a> = Loading, <a style="color: red;">Red</a> = No data, <a style="color: green;">Green</a> = has data (no picture), <a style="color: lime;">Lime</a> = has data (w picture)</h2>
         <button onclick="sortTeams_Rank(this)">Sort Rank</button>
         <button onclick="sortTeams_Number(this)">Sort Number</button>
         <div id="teams" class=""></div>
+    </div>
+
+    <hr>
+
+    <h1 class="collapsible">Skills:</h1>
+    <div class="content">
+        <div id="skills" class=""></div>
     </div>
 
     <script defer>
         const ourMatchesElm = document.getElementById("ourMatches")
         const matchesElm = document.getElementById("matches")
         const teamsElm = document.getElementById("teams")
+        const skillsElm = document.getElementById("skills")
         const shiftElm = document.getElementById("shift")
 
         const splitURL = window.location.pathname.split("/")
@@ -125,6 +132,39 @@
             button.disabled = false
         }
 
+        function sortSkills_Rank() {
+            // button.disabled = true
+            // console.log("Function called!", button);
+            let elms = [];
+            console.log(skillsElm);
+
+            for (let elm of skillsElm.children) {
+                console.log(elm);
+
+                // Make sure to check if the elements have the expected structure
+                let rankElement = elm.children[0].children[0];
+                if (rankElement && rankElement.textContent) {
+                    let rank = Number(rankElement.textContent.split(".").shift());
+                    if (!rank) continue
+                    elms.push({ rank: rank, elm: elm });
+                }
+            }
+
+            elms = elms.sort((a, b) => a.rank - b.rank);
+            console.log("sorted elms", elms);
+
+            // Remove elements from the parent after sorting
+            for (let elm of elms) {
+                elm.elm.remove();
+            }
+
+            for (let elm of elms) {
+                console.log(elm);
+                skillsElm.append(elm.elm);
+            }
+            // button.disabled = false
+        }
+
 
         async function reloadResults() {
             ourMatchesElm.innerHTML = ""
@@ -156,6 +196,12 @@
             let rankingsResponse = await fetch(`/api/event/ranks/${eventID}/${divID}`)
             let rankingsData = await rankingsResponse.json()
             return rankingsData
+        }
+
+        async function getSkills() {
+            let skillsResponse = await fetch(`/api/event/skills/${eventID}`)
+            let skillsData = await skillsResponse.json()
+            return skillsData
         }
 
         async function m() {
@@ -237,6 +283,7 @@
                 const html = `
                 <h1>${match.name}</h1>
                 ${colorHTML}
+                <h2>Field: ${match.field}</h2>
                 <p>Time Until (Minutes): ${(milliUntillMatch / 1000) / 60}</p>
                 <p>Start time: ${start.toLocaleTimeString()}</p>
                 <p><a style="color:${blueColor};">Blue</a>: (${blueScore}) ${blueHTML}</p>
@@ -265,6 +312,7 @@
             console.log("eek!", addedTeams)
 
             let addedElms = {}
+            let skillsElms = {}
 
             for (let team of addedTeams) {
                 console.log("Adding team!", team)
@@ -285,26 +333,76 @@
                 teamsElm.appendChild(div)
             }
 
+            for (let team of addedTeams) {
+                console.log("Adding team!", team)
+                const div = document.createElement("div")
+                const h1 = document.createElement("h1")
+                const aElm = document.createElement("a")
+                div.id = team.teamNumber
+                // let color = "red"
+                // TODO: Check AFTER we have added all the teams
+                skillsElms[team.teamID] = aElm
+                aElm.innerText = team.teamNumber
+                aElm.style.color = "blue"
+
+                h1.appendChild(aElm)
+                div.appendChild(h1)
+                skillsElm.appendChild(div)
+            }
+
             console.log("Adding teams to list!")
-            let ranksData = await getRanks()
             let teamsData = await checkForData(Object.keys(addedElms))
-            console.log("rank and teams", ranksData, teamsData)
+            console.log("teamsData", teamsData)
             for (let teamID in addedElms) {
                 let aElm = addedElms[teamID]
                 console.log("Adding", teamID)
 
-                if (ranksData.length != 0) {
+                let color = "red"
+                if (teamsData && teamsData[teamID] != null) color = "lime"
+                if (teamsData && teamsData[teamID] != null && teamsData[teamID].picture == 0) color = "green"
+
+                aElm.style.color = color
+                console.log("Added", teamID)
+            }
+
+            let ranksData = await getRanks()
+            
+            if (ranksData.length != 0) {
+                for (let teamID in addedElms) {
+                    let aElm = addedElms[teamID]
+
                     console.log("Adding rank!")
                     let rankData = ranksData.find((v => v.team.id == teamID))
-                    if (!rankData) break
+                    if (!rankData) continue
                     console.log(rankData)
                     aElm.innerText = `${rankData.rank}. ${aElm.innerText}`
                 }
+            }
 
-                let color = "red"
-                if (teamsData && teamsData[teamID] != null) color = "green"
-                aElm.style.color = color
-                console.log("Added", teamID)
+
+            let skillsData = await getSkills()
+            console.log("skillsData", skillsData, "skillsElms", skillsElms)
+            if (skillsData.length != 0) {
+                for (let teamID in skillsElms) {
+                    let aElm = skillsElms[teamID]
+
+                    let skillData = skillsData.filter((v => v.team.id == teamID))
+                    console.log("Adding Skills!", teamID, skillData)
+                    if (skillData.length == 0) {
+                        aElm.style.display = "none"
+                        continue
+                    }
+                    let score = ""
+                    let total = 0
+                    for (let skillRun of skillData) {
+                        score+=`${skillRun.type == "driver" ? "Driver:" : "Prog:"} ${skillRun.score}, `
+                        total+=skillRun.score
+                    }
+                    
+                    aElm.style.color = "green"
+                    aElm.innerText = `${skillData[0].rank}. ${aElm.innerText}: Total: ${total}, ${score}`
+                }
+                sortSkills_Rank()
             }
         }
         m()

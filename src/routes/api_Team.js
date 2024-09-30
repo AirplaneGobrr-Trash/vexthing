@@ -70,7 +70,7 @@ router.post("/data/:eventID", async (req, res) => {
     if (teamStoredData) {
       let copy = JSON.parse(JSON.stringify(teamStoredData))
       console.log(copy)
-      delete copy.picture
+      copy.picture = copy.picture ? 1 : 0
       back[teamID] = copy ?? null
     }
   }
