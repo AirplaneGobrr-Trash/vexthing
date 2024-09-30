@@ -19,6 +19,10 @@
     <img id="image" alt="Robot" style="height: 500px;" />
     <hr>
     <input type="file" id="updatePicture" /><button id="upload">Upload</button>
+    <div id="progressContainer">
+        <progress id="progressBar" value="0" max="100"></progress>
+        <span id="progressText">0%</span>
+    </div>
 
     <hr>
 
@@ -80,16 +84,50 @@
         let imgURL = `/api/team/data/${eventID}/${teamID}.png`
         imageElm.src = imgURL
 
+        // uploadElm.onclick = () => {
+        //     console.log(pictureElm.files)
+        //     let file = pictureElm.files[0]
+        //     let toSend = new FormData();
+        //     toSend.append("file", file);
+        //     fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: toSend }).then((r) => {
+        //         imageElm.src = `${imgURL}?${new Date().getTime()}`
+        //         alert("Uploaded image!")
+        //     });
+        // }
+
         uploadElm.onclick = () => {
-            console.log(pictureElm.files)
-            let file = pictureElm.files[0]
-            let toSend = new FormData();
-            toSend.append("file", file);
-            fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: toSend }).then((r) => {
-                imageElm.src = `${imgURL}?${new Date().getTime()}`
-                alert("Uploaded image!")
-            });
-        }
+        console.log(pictureElm.files);
+        let file = pictureElm.files[0];
+        let toSend = new FormData();
+        toSend.append("file", file);
+
+        let xhr = new XMLHttpRequest();
+
+        // Update progress bar during the upload
+        xhr.upload.addEventListener("progress", (event) => {
+            if (event.lengthComputable) {
+                let percentComplete = (event.loaded / event.total) * 100;
+                progressBar.value = percentComplete;
+                progressText.innerText = `${Math.round(percentComplete)}%`;
+            }
+        });
+
+        // Alert when the upload is complete
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                imageElm.src = `${imgURL}?${new Date().getTime()}`;
+                alert("Uploaded image!");
+                progressBar.value = 0; // Reset progress bar
+                progressText.innerText = "0%";
+            } else {
+                alert("Upload failed!");
+            }
+        };
+
+        // Send the request
+        xhr.open("POST", `/api/team/upload/${eventID}/${teamID}`, true);
+        xhr.send(toSend);
+    };
 
         skillsElm.onsubmit = (event) => {
             event.preventDefault()
