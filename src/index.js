@@ -51,7 +51,7 @@ app.get("/t/:teamNumber", async (req, res) => {
   })
 })
 
-app.get("/times/:eventID/:divID/:teamID", async (req, res) => {
+app.get("/times/:eventID/:divID/:teamID/html", async (req, res) => {
   let teamID = req.params.teamID
   let eventID = req.params.eventID
   let divID = req.params.divID
@@ -135,8 +135,8 @@ app.get("/times/:eventID/:divID/:teamID", async (req, res) => {
 
     let colorHTML = ""
     switch (teamColor) {
-      case "blue": colorHTML = `<h2 style="color: ${blueColor};">We are blue</h2>`; break;
-      case "red": colorHTML = `<h2 style="color: ${redColor};">We are red</h2>`; break;
+      case "blue": colorHTML = `<h2 style="color: ${blueColor};">Team is blue</h2>`; break;
+      case "red": colorHTML = `<h2 style="color: ${redColor};">Team is red</h2>`; break;
     }
 
     if (blueScore > redScore) {
@@ -160,6 +160,11 @@ app.get("/times/:eventID/:divID/:teamID", async (req, res) => {
       sendingHTML.teamMatches += divElm
     }
     sendingHTML.matches += divElm
+  }
+
+  // TODO: Add more of these stoppers
+  if (req.query.type == "teamMatches") {
+    return res.json(sendingHTML)
   }
 
   if (addedTeams.length == 0) {
@@ -241,11 +246,20 @@ app.get("/times/:eventID/:divID/:teamID", async (req, res) => {
   }
 
   if (sendingHTML.skills == "") sendingHTML.skills = errorHTML
+  res.json(sendingHTML)
+})
 
+app.get("/times/:eventID/:divID/:teamID", async (req, res) => {
+  let teamID = req.params.teamID
+
+  const team = await rApi.team(teamID)
+  const teamData = await team.getData()
+  console.log(team, teamData)
+
+  if (!teamData) return res.status(404).send(`No team found with ID ${teamID}`);
 
   res.render("times", {
-    teamNumber: teamData.number,
-    ...sendingHTML
+    teamNumber: teamData.number
   })
 })
 

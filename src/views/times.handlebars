@@ -16,7 +16,6 @@
     <h1 class="collapsible active">Our Matches:</h1>
     <div class="content">
         <div id="ourMatches" class="matchHolder">
-            {{{teamMatches}}}
         </div>
     </div>
 
@@ -25,7 +24,6 @@
     <h1 class="collapsible">All Matches:</h1>
     <div class="content">
         <div id="matches" class="matchHolder">
-            {{{matches}}}
         </div>
     </div>
 
@@ -37,7 +35,6 @@
         <button onclick="sortTeams_Rank(this)">Sort Rank</button>
         <button onclick="sortTeams_Number(this)">Sort Number</button>
         <div id="teams">
-            {{{teams}}}
         </div>
     </div>
 
@@ -46,7 +43,6 @@
     <h1 class="collapsible">Skills:</h1>
     <div class="content">
         <div id="skills">
-            {{{skills}}}
         </div>
     </div>
 
@@ -173,7 +169,13 @@
             // button.disabled = false
         }
 
-        window.onload = () =>{
+        window.onload = async () =>{
+            let html = await (await fetch("html")).json()
+            console.log(html)
+            ourMatchesElm.innerHTML = html.teamMatches
+            matchesElm.innerHTML = html.matches
+            teamsElm.innerHTML = html.teams
+            skillsElm.innerHTML = html.skills
             sortSkills_Rank()
             sortTeams_Rank({disabled: false})
         }

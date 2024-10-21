@@ -35,6 +35,12 @@
         <input type="submit" id="save" value="Save"><input type="submit" id="cancel" value="Cancel">
     </form>
 
+    <h1 class="collapsible active">Teams Matches:</h1>
+    <div class="content">
+        <div id="teamMatches" class="matchHolder">
+        </div>
+    </div>
+
     <script defer>
         const splitURL = window.location.pathname.split("/")
         const teamID = splitURL.pop()
@@ -50,6 +56,12 @@
         const imageElm = document.getElementById("image")
         const pictureElm = document.getElementById("updatePicture")
         const uploadElm = document.getElementById("upload")
+        
+        const matchesElm = document.getElementById("teamMatches")
+        fetch(`/times/${eventID}/1/${teamID}/html?type=teamMatches`).then(async (res)=>{
+            let json = await res.json()
+            matchesElm.innerHTML = json.teamMatches
+        })
 
         const lookupButtonElm = document.getElementById("open")
         const lookupValueElm = document.getElementById("lookup")
@@ -297,6 +309,21 @@
 
         }
         loadData()
+
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
     </script>
 </body>
 
