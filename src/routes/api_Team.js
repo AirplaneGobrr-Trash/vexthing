@@ -30,7 +30,7 @@ router.get("/data/:eventID/:teamID", async (req, res) => {
   let eventStoredData = await utils.getEventData(eventID)
   let teamStoredData = await eventStoredData.getTeamData(teamID)
   if (imgMode) {
-    let img = teamStoredData?.picture
+    let img = teamStoredData?.picture // TODO: Compress img using sharp
     if (!img) return res.send("No Picture!")
     res.writeHead(200, {
       'Content-Type': 'image/png',
@@ -70,7 +70,7 @@ router.post("/data/:eventID", async (req, res) => {
     if (teamStoredData) {
       let copy = JSON.parse(JSON.stringify(teamStoredData))
       console.log(copy)
-      delete copy.picture
+      copy.picture = copy.picture ? 1 : 0
       back[teamID] = copy ?? null
     }
   }

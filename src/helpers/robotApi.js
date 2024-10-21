@@ -112,11 +112,15 @@ class eventC {
         return data
     }
     async getMacthes(divID, page = 1) {
-        let data = await doGet(`/events/${this.eventID}/divisions/${divID}/matches?page=${page}&per_page=100`,2)
+        let data = await doGet(`/events/${this.eventID}/divisions/${divID}/matches?page=${page}&per_page=100`,1)
+        return data.data
+    }
+    async getSkills(page = 1) {
+        let data = await doGet(`/events/${this.eventID}/skills?page=${page}&per_page=100`,2)
         return data.data
     }
     async getTeams(page = 1){
-        let data = await doGet(`/events/${this.eventID}/teams?page=${page}&per_page=100`, 60)
+        let data = await doGet(`/events/${this.eventID}/teams?page=${page}&per_page=100`, 5)
         return data.data
     }
     async getRankings(divID, page = 1) {
@@ -168,7 +172,7 @@ class teamC {
     async getEvents() {
         await this.check()
         let startDate = new Date()
-        startDate.setFullYear(2023, 3, 1) // TODO: fix this to move to the year?
+        startDate.setFullYear(2024, 3, 1) // TODO: fix this to move to the year?
         let data = await doGet(`/events?team=${this.teamID}&start=${startDate?.toDateString()}&per_page=100`)
         return data.data
     }

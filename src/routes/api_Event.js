@@ -12,6 +12,15 @@ router.get("/matches/:eventID/:divID", async (req, res)=>{
   res.send(eventData)
 })
 
+router.get("/skills/:eventID", async (req, res)=>{
+  let eventID = req.params.eventID
+
+  let event = rApi.event(eventID)
+  let eventData = await event.getSkills(1)
+
+  res.send(eventData)
+})
+
 router.get("/teams/:eventID", async (req, res)=>{
   let eventID = req.params.eventID
 
