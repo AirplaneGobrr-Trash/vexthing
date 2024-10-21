@@ -38,7 +38,7 @@ app.get("/t/:teamNumber", async (req, res) => {
       <h3>Where:  <a>${locString}</a> <a href="https://www.google.com/maps/search/${locString.replaceAll(" ", "+")}" target="_blank">(Google Maps)</a> <a href="https://maps.apple.com/?address=${locString.replaceAll(" ", "+")}" target="_blank">(Apple Maps)</a></h3>
       <h3>Venue: ${event.location.venue}</h3>
       <h3>When: ${date.toLocaleDateString()} (${Math.round((date.valueOf() - today.valueOf())/1000/60/60/24)} days)</h3>
-      <h3>Goto Page: <a href="/times/${event.id}/${event.divisions[0].id}/{{teamID}}">GO!</a>
+      <h3>Goto Page: <a href="/times/${event.id}/${event.divisions[0].id}/${teamData.id}">GO!</a>
     </div>
     `
     // TODO: Find the division the team is in
@@ -197,8 +197,12 @@ app.get("/times/:eventID/:divID/:teamID", async (req, res) => {
     if (teamHasData && teamHasData[team.teamID] != null && teamHasData[team.teamID].picture == 0) color = "green"
     let rankData = ranksData.find((v => v.team.id == team.teamID))
     let rank = ""
+    let extra = ""
     if (rankData && rankData?.length != 0) {
       rank += `${rankData.rank}. `
+      extra += `<p>Wins: <u>${rankData.wins}</u> Losses: <u>${rankData.losses}</u> Ties: <u>${rankData.ties}</u></p>`
+      extra += `<p>WP: <u>${rankData.wp}</u> AP: <u>${rankData.ap}</u> SP: <u>${rankData.sp}</u></p>`
+      extra += `<p>High score: <u>${rankData.high_score}</u> Avg Score: <u>${rankData.average_points}</u> Total: <u>${rankData.total_points}</u></p>`
     }
 
     sendingHTML.teams += `
@@ -208,6 +212,7 @@ app.get("/times/:eventID/:divID/:teamID", async (req, res) => {
           ${rank}${team.teamNumber}
         </a>
       </h1>
+      ${extra}
     </div>`
   }
 
