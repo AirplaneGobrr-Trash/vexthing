@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team selector</title>
+    <title>Event selector</title>
     <link rel="stylesheet" href="/static/style/main.css">
 </head>
 <body>
-    {% for team in mainTeams %}
-        <h1><a href="/t/{{team}}">{{team}}</a></h1>
-    {% endfor %}
-    {% for team in teams %}
-        <p><a href="/t/{{team}}">{{team}}</a></p>
-    {% endfor %}
+    <h1 id="team">{{teamNumber}}</h1>
+    <div id="events">
+        {{{events}}}
+    </div>
 </body>
 </html>

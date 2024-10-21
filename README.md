@@ -2,6 +2,8 @@
 
 This is an app that helps with scouting!
 
+HTML is rendered on the server for FAST speeds!
+
 This app was built for the 2023-2024 Vex game (Over Under)
 
 **KEEP IN MIND THIS APP HAS NO LOGIN PAGE AND IS DESIGNED TO BE DEPLOYED ON SITE**

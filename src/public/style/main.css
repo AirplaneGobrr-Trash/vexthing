@@ -26,7 +26,7 @@
 .collapsible {
     cursor: pointer;
     padding: 18px;
-    width: 100%;
+    width: auto;
     border: none;
     text-align: left;
     outline: none;
