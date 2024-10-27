@@ -170,7 +170,7 @@
         }
 
         window.onload = async () =>{
-            let html = await (await fetch("html")).json()
+            let html = await (await fetch(window.location.href+"/html")).json()
             console.log(html)
             ourMatchesElm.innerHTML = html.teamMatches
             matchesElm.innerHTML = html.matches
