@@ -259,8 +259,13 @@ app.get("/times/:eventID/:divID/:teamID", async (req, res) => {
   if (!teamData) return res.status(404).send(`No team found with ID ${teamID}`);
 
   res.render("times", {
-    teamNumber: teamData.number
+    teamNumber: teamData.number,
+    eventID: req.params.eventID
   })
+})
+
+app.get("/teams/:eventID/editor", async (req, res)=>{
+  res.render("data")
 })
 
 app.get('/team/:eventID/:teamID', async (req, res) => {

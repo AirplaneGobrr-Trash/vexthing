@@ -79,7 +79,7 @@ async function doGet(url, refreshTimeMins = 60){
         let t2 = refreshTimeMins*60*1000
         if ((new Date()-new Date(cache.created)) <= (refreshTimeMins*60*1000)) {
             console.log("Sending cached result! Refresh in", (t2 - t1)/1000, "seconds")
-            return JSON.parse(cache.data)
+            return cache.data
         } else {
             console.log("Cache needs to be refreshed!")
         }

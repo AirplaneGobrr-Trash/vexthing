@@ -8,6 +8,8 @@ Make sure you add the layout you want [here](/src/layout) Use the [example](/src
 
 182 is the Season ID for `Over Under` (for VEX U)
 
+190 is the Season ID for `High stakes` (for VRC)
+
 # Main page (`/`)
 
 ![The main page with teams](imgs/main.png)
@@ -40,18 +42,22 @@ The `Our Matchs` has info about the teams matchs
 
 At the top of the page you can enter a time (in minutes) to shift the times (if the event is running late or fast)
 
-**For now you have to reload the page for the times to update**
+**The page will ask if you want to update the info every 5 minutes**
 
 It says what the name of the match is, what color you are and who your teammates are
 It has the start time, this is how long utill the match starts
 
 The `All matches` drop down is the same just with all the matches
 
-The `Teams` drop down has all the teams with their links
+The `Teams` drop down has all the teams with their links- it shows the teams in rank and gives wins, loses, ties, and score info
+
+![Read below](imgs/timeMore.png)
+
+The `skills` drop down will show you skills ranking
 
 **When clicking on any team it will open it in a new tab!**
 
-# Scouting Team (`\team/<eventID>/<teamID>`)
+# Scouting Team (`/team/<eventID>/<teamID>`)
 
 ![Team info](imgs/teamInfo.png)
 
@@ -62,3 +68,5 @@ Below is a few options and they are self explanatory
 Below the settings there are the save and cancel buttons
 
 The cancel button will just reload the page
+
+It also shows the teams matches!

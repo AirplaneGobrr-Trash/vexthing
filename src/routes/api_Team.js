@@ -31,12 +31,13 @@ router.get("/data/:eventID/:teamID", async (req, res) => {
   let teamStoredData = await eventStoredData.getTeamData(teamID)
   if (imgMode) {
     let img = teamStoredData?.picture // TODO: Compress img using sharp
-    if (!img) return res.send("No Picture!")
+    if (!img) return res.send("No Picture!");
+    let realImg = Buffer.from(img)
     res.writeHead(200, {
       'Content-Type': 'image/png',
-      'Content-Length': img.length
+      'Content-Length': realImg.length
     });
-    res.end(img);
+    res.end(realImg);
     return
   }
   if (teamStoredData) teamStoredData.picture = `http://${req.headers.host}${req.originalUrl}?picture=true`
@@ -57,9 +58,12 @@ router.post("/data/:eventID", async (req, res) => {
   let back = {}
   for (let teamID of teamIDs) {
     let team = await rApi.team(teamID)
-    let teamData = team.getData()
+    let teamData = await team.getData()
 
-    back[teamID] = null
+    back[teamID] = {
+      teamID: teamID,
+      teamNumber: team.teamNumber
+    }
 
     if (!teamData) {
       continue
@@ -77,26 +81,6 @@ router.post("/data/:eventID", async (req, res) => {
   console.log("Done!")
   console.log(back)
   return res.json(back)
-
-  let teamID = req.params.teamID
-  let imgMode = req.query.picture ?? teamID.includes(".png")
-  teamID = teamID.split(".png").shift()
-  console.log("upload", teamID)
-
-  let eventStoredData = await utils.getEventData(eventID)
-  let teamStoredData = await eventStoredData.getTeamData(teamID)
-  if (imgMode) {
-    let img = teamStoredData?.picture
-    if (!img) return res.send("No Picture!")
-    res.writeHead(200, {
-      'Content-Type': 'image/png',
-      'Content-Length': img.length
-    });
-    res.end(img);
-    return
-  }
-  if (teamStoredData) teamStoredData.picture = `http://${req.headers.host}${req.originalUrl}?picture=true`
-  res.send(teamStoredData ?? {})
 })
 
 const upload = multer()

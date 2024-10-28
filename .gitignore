@@ -138,3 +138,4 @@ tmpData/*
 error.html
 config.json
 src/layout/*.json
+src/layout/*.js

@@ -1,4 +1,5 @@
 const dataHelper = require("./dataHelper")
+const path = require("path")
 const fs = require("fs")
 const eventDatas = {}
 
@@ -15,8 +16,17 @@ async function getEventData(eventID) {
 }
 
 async function getSeasonLayout(seasonID){
-  let data = fs.readFileSync(`./layout/${seasonID}.json`)
-  return JSON.parse(data)
+  let jsFile = path.join(__dirname, "..","layout", `${seasonID}.js`)
+  let jsonFile = `./layout/${seasonID}.json`
+
+  console.log("jsFile",jsFile)
+
+  if (fs.existsSync(jsFile)) {
+    return require(jsFile)
+  } else if (fs.existsSync(jsonFile)) {
+    return JSON.parse(fs.readFileSync(jsonFile))
+  }
+  return null
 }
 
 function teamSort(a, b) {

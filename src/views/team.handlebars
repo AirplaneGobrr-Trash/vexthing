@@ -12,7 +12,7 @@
     <h1 id="teamName">{{teamNumber}}</h1>
     <hr>
     <input id="lookup" type="text" style="width: 500px;"
-        value="https://www.youtube.com/results?search_query={teamNumber}+high+stakes+vex+vrc">
+           value="https://www.youtube.com/results?search_query={teamNumber}+high+stakes+vex+vrc">
     <button id="open">Open</button> <a>(Use <b><em>{teamNumber}</em></b> to refer to the team number in the URL)</a>
     <hr>
 
@@ -28,7 +28,7 @@
 
     <form id="skills">
 
-        <div id="data"></div>
+        <div id="data" class="matchHolder"></div>
 
         <hr>
 
@@ -48,17 +48,17 @@
         console.log(teamID)
 
         let dataLayout = {}
-
         let dataElms = {}
+        let teamData = {}
 
         const skillsElm = document.getElementById("skills")
         const dataElm = document.getElementById("data")
         const imageElm = document.getElementById("image")
         const pictureElm = document.getElementById("updatePicture")
         const uploadElm = document.getElementById("upload")
-        
+
         const matchesElm = document.getElementById("teamMatches")
-        fetch(`/times/${eventID}/1/${teamID}/html?type=teamMatches`).then(async (res)=>{
+        fetch(`/times/${eventID}/1/${teamID}/html?type=teamMatches`).then(async (res) => {
             let json = await res.json()
             matchesElm.innerHTML = json.teamMatches
         })
@@ -78,21 +78,6 @@
             window.open(url.replace("{teamNumber}", "{{teamNumber}}"), '_blank');
         }
 
-        function decodeNumber(number) {
-            let layout = [1, 2, 4, 8, 10, 12, 14, 16, 18]; // Add more powers of 2 as needed
-            let decodedArray = [];
-
-            for (let i = layout.length - 1; i >= 0; i--) {
-                if (number >= layout[i]) {
-                    decodedArray.unshift(layout[i]);
-                    number -= layout[i];
-                }
-            }
-
-            return decodedArray;
-        }
-
-
         let imgURL = `/api/team/data/${eventID}/${teamID}.png`
         imageElm.src = imgURL
 
@@ -108,65 +93,65 @@
         // }
 
         uploadElm.onclick = () => {
-        console.log(pictureElm.files);
-        let file = pictureElm.files[0];
-        let toSend = new FormData();
-        toSend.append("file", file);
+            console.log(pictureElm.files);
+            let file = pictureElm.files[0];
+            let toSend = new FormData();
+            toSend.append("file", file);
 
-        let xhr = new XMLHttpRequest();
+            let xhr = new XMLHttpRequest();
 
-        // Update progress bar during the upload
-        xhr.upload.addEventListener("progress", (event) => {
-            if (event.lengthComputable) {
-                let percentComplete = (event.loaded / event.total) * 100;
-                progressBar.value = percentComplete;
-                progressText.innerText = `${Math.round(percentComplete)}%`;
-            }
-        });
+            // Update progress bar during the upload
+            xhr.upload.addEventListener("progress", (event) => {
+                if (event.lengthComputable) {
+                    let percentComplete = (event.loaded / event.total) * 100;
+                    progressBar.value = percentComplete;
+                    progressText.innerText = `${Math.round(percentComplete)}%`;
+                }
+            });
 
-        // Alert when the upload is complete
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                imageElm.src = `${imgURL}?${new Date().getTime()}`;
-                alert("Uploaded image!");
-                progressBar.value = 0; // Reset progress bar
-                progressText.innerText = "0%";
-            } else {
-                alert("Upload failed!");
-            }
+            // Alert when the upload is complete
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    imageElm.src = `${imgURL}?${new Date().getTime()}`;
+                    alert("Uploaded image!");
+                    progressBar.value = 0; // Reset progress bar
+                    progressText.innerText = "0%";
+                } else {
+                    alert("Upload failed!");
+                }
+            };
+
+            // Send the request
+            xhr.open("POST", `/api/team/upload/${eventID}/${teamID}`, true);
+            xhr.send(toSend);
         };
-
-        // Send the request
-        xhr.open("POST", `/api/team/upload/${eventID}/${teamID}`, true);
-        xhr.send(toSend);
-    };
 
         skillsElm.onsubmit = (event) => {
             event.preventDefault()
             let subType = event.submitter.value.toLowerCase()
             if (subType == "save") {
                 let toSend = {}
-                console.log(dataElms)
                 for (let key in dataLayout) {
-                    if (dataElms[key]) {
-                        let val = dataElms[key].checked ?? dataElms[key]?.options?.selectedIndex ?? dataElms[key].value
-                        console.log(key, val)
-                        toSend[key] = val
-                    } else {
-                        let count = 0
-                        let res = 0
-                        for (let keyKey in dataLayout[key]) {
-                            count++
-                            let elm = dataElms[`${key}_${keyKey}`]
-                            if (elm.checked) {
-                                res += count ** 1
+                    for (let elm of dataLayout[key]) {
+                        let id = `${key}-${elm.value}`
+                        console.log(id, dataElms[id])
+
+                        toSend[id] = dataElms[id]?.value
+
+                        if (inputTypes.includes(elm.type)) {
+                            if (dataElms[id]?.type == "checkbox") {
+                                toSend[id] = dataElms[id]?.checked
                             }
                         }
-                        toSend[key] = res
-                        console.log(key, res)
                     }
                 }
-                console.log("toSend", toSend)
+                for (let elm in toSend) {
+                    if (teamData[elm] && teamData[elm] === toSend[elm]) {
+                        delete toSend[elm] // Remove values that haven't chaneged?
+                    }
+                }
+                console.log(dataElms, dataLayout)
+                console.log("toSend", toSend, teamData)
                 fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: JSON.stringify(toSend), headers: { "Content-Type": "application/json" } }).then((r) => {
                     alert("Updated data!")
                 })
@@ -184,129 +169,91 @@
             // console.log(elm)
         }
 
+        const inputTypes = ["checkbox", "text", "number", "range"]
+
         async function loadData() {
             let dataLayoutResponse = await fetch(`/api/event/${eventID}/layout`)
             dataLayout = await dataLayoutResponse.json()
 
             let teamDataResponse = await fetch(`/api/team/data/${eventID}/${teamID}`)
-            let teamData = await teamDataResponse.json()
+            teamData = await teamDataResponse.json()
 
             console.log(dataLayout, teamData)
 
             let before = null
 
             for (let key in dataLayout) {
-                let data = dataLayout[key]
+                console.log(key, dataLayout[key])
 
-                let dType = typeof data
-                if (isString(data)) dType = data.toLowerCase()
+                let keyDiv = document.createElement("div")
+                let keyName = document.createElement("h1")
+                keyName.innerText = `${key}`
 
-                if (before && dataLayout[before]) {
-                    let dataBefore = dataLayout[before]
-                    console.log("Before", before, dataBefore)
-                    if (data != dataBefore) {
-                        let hr = document.createElement("hr")
-                        dataElm.append(hr)
-                    }
-                }
+                keyDiv.classList.add("dataThing")
+                keyDiv.append(keyName)
 
-                before = key
+                for (let elm of dataLayout[key]) {
+                    console.log("key elm",key, elm)
+                    let inputDiv = document.createElement("div")
+                    inputDiv.id = `${key}-div-${elm.value}`
+                    let inputName = document.createElement("lable")
+                    inputName.innerText = `${elm.name}: `
+                    inputDiv.append(inputName)
 
-                switch (dType) {
-                    case "boolean": {
-                        let label = document.createElement("label")
-                        let bool = document.createElement("input")
-                        let br = document.createElement("br")
-                        label.setAttribute("for", key)
-                        label.innerText = `${key}:`
-                        bool.id = key
-                        bool.type = "checkbox"
-                        if (teamData[key]) {
-                            bool.setAttribute("checked", true)
-                        }
-                        dataElms[key] = bool
-                        dataElm.append(label, bool, br)
-                        break
-                    }
-                    case "string": {
-                        let label = document.createElement("label")
-                        let string = document.createElement("textarea")
-                        let br = document.createElement("br")
-                        let br2 = document.createElement("br")
-                        label.setAttribute("for", key)
-                        label.innerText = `${key}:`
-                        string.id = key
-                        string.type = "text"
-                        if (teamData[key]) {
-                            string.value = teamData[key]
-                        }
-                        dataElms[key] = string
-                        dataElm.append(label, br, string, br2)
-                        break
-                    }
-                    case "number": {
-                        let label = document.createElement("label")
-                        let num = document.createElement("input")
-                        let br = document.createElement("br")
-                        let br2 = document.createElement("br")
-                        label.setAttribute("for", key)
-                        label.innerText = `${key}:`
-                        num.id = key
-                        num.type = "number"
-                        if (teamData[key]) {
-                            num.value = teamData[key]
-                        }
-                        dataElms[key] = num
-                        dataElm.append(label, br, num, br2)
-                        break
-                    }
-                    case "object": {
-                        if (Array.isArray(data)) {
-                            let label = document.createElement("label")
-                            let arr = document.createElement("select")
-                            let br = document.createElement("br")
-                            label.setAttribute("for", key)
-                            label.innerText = `${key}:`
-                            arr.id = key
-                            for (let keyKey of data) {
-                                let opt = document.createElement("option")
-                                opt.innerText = keyKey
-                                opt.id = `${key}_${keyKey}`
-                                arr.append(opt)
+                    if (inputTypes.includes(elm.type)) {
+                        let input = document.createElement("input")
+                        input.type = elm.type
+                        input.id = `${key}-${elm.value}`
+                        if (input.id in teamData) {
+                            if (elm.type == "checkbox") {
+                                input.checked = teamData[input.id]
+                            } else {
+                                input.value = teamData[input.id]
                             }
-                            if (teamData[key]) {
-                                arr.options.selectedIndex = teamData[key]
-                            }
-                            dataElms[key] = arr
-                            dataElm.append(label, arr, br)
-                        } else {
-                            let decoded = decodeNumber(teamData[key])
-                            console.log("decode", decoded, teamData[key])
-                            let br2 = document.createElement("br")
-                            let toAdd = []
-                            let c = 0
-                            for (let keyKey in data) {
-                                c++
-                                let objLable = document.createElement("label")
-                                let obj = document.createElement("input")
-                                let br = document.createElement("br")
-                                obj.type = "checkbox"
-                                objLable.innerText = `${key} ${keyKey}`
-                                dataElms[`${key}_${keyKey}`] = obj
-                                if (decoded.includes(c)) {
-                                    obj.setAttribute("checked", true)
+                        }
+                        dataElms[input.id] = input
+                        inputDiv.append(input)
+                    } else if (elm.type == "textbox") {
+                        let input = document.createElement("textarea")
+                        input.id = `${key}-${elm.value}`
+
+                        dataElms[input.id] = input
+
+                        if (input.id in teamData) {
+                            input.value = teamData[input.id]
+                        }
+
+                        let br = document.createElement("br")
+                        inputDiv.append(br,input)
+                    } else if (elm.type == "select") {
+                        let input = document.createElement("select")
+                        input.id = `${key}-${elm.value}`
+
+                        for (let item of elm.values) {
+                            let option = document.createElement("option")
+                            option.value = `${key}-${elm.name}-${item.value}`
+                            option.innerText = item.name
+
+                            if (input.id in teamData) {
+                                if (teamData[input.id] == option.value) {
+                                    option.selected = true
                                 }
-                                toAdd.push(objLable, obj, br)
                             }
-                            dataElm.append(...toAdd)
+
+                            input.append(option)
                         }
-                        break
+                        dataElms[input.id] = input
+
+                        inputDiv.append(input)
                     }
+                    
+                    
+                    keyDiv.append(inputDiv)
                 }
+                let br = ""//document.createElement("hr")
+                dataElm.append(keyDiv, br)
             }
-
-            autoResize()
-
+            alert("Loaded data!")
         }
         loadData()
 

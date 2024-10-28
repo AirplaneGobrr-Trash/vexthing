@@ -41,18 +41,8 @@ Type: POST
 
 Type: application/json
 Data:
-```json
-{
-    "auton": <Number>,
-    "cata": <Number>,
-    "hang": <Number>,
-    "intake": <Boolean>,
-    "notes": <String>,
-    "push": <Boolean>,
-    "teamNumber": <String>,
-    "wings": <Boolean>
-}
-```
+`TODO in 2.0.5` - sorry.
+
 Updates data
 
 OR

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Editor</title>
+    <link rel="stylesheet" href="/static/style/main.css">
+</head>
+
+<body> 
+    <table id="table" style="max-height: 200px; overflow-y: auto;">
+        <tr id="rows" style="position: sticky; top: 0; background-color: white; z-index: 1;">
+            <th>Team</th>
+        </tr>
+    </table>
+
+    <script defer>
+        const table = document.getElementById("table")
+        const tableRows = document.getElementById("rows")
+
+        let eventID = "55783"
+        let inputTypes = ["checkbox", "text", "number", "range"]
+
+        fetch(`/api/event/teams/${eventID}`).then(async v => {
+            let dataLayout = await (await fetch(`/api/event/${eventID}/layout`)).json()
+            console.log("dataLayout", dataLayout)
+
+            for (let name in dataLayout) {
+                console.log(name)
+                let th = document.createElement("th")
+                th.innerText = name
+                tableRows.append(th)
+            }
+
+            let data = await v.json()
+            let ids = data.map(e => e.id)
+            console.log(ids)
+            let res = await fetch(`/api/team/data/${eventID}`, {
+                body: JSON.stringify({ teamIDs: ids }),
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+
+            let teamsData = await res.json()
+
+            for (let teamID in teamsData) {
+                console.log(teamsData[teamID])
+                let teamData = teamsData[teamID] ?? {}
+
+                let tr = document.createElement("tr")
+
+                let th = document.createElement("th")
+                th.innerHTML = `<a href="/team/${eventID}/${teamID}">${teamData?.teamNumber} (${teamID})</a>`
+                tr.append(th)
+
+                table.append(tr)
+                let dataElms = {}
+
+                for (let key in dataLayout) {
+                    let th = document.createElement("th")
+                    tr.append(th)
+                    for (let elm of dataLayout[key]) {
+                        
+                        let inputName = document.createElement("lable")
+                        inputName.innerText = `${elm.name}: `
+                        th.append(inputName)
+
+                        
+                        let br = document.createElement("br")
+
+                        if (inputTypes.includes(elm.type)) {
+                            let input = document.createElement("input")
+                            input.type = elm.type
+                            input.id = `${key}-${elm.value}`
+                            if (input.id in teamData) {
+                                if (elm.type == "checkbox") {
+                                    input.checked = teamData[input.id]
+                                } else {
+                                    input.value = teamData[input.id]
+                                }
+                            }
+                            dataElms[input.id] = input
+                            th.append(input, br)
+                        } else if (elm.type == "textbox") {
+                            let input = document.createElement("textarea")
+                            input.id = `${key}-${elm.value}`
+
+                            dataElms[input.id] = input
+
+                            if (input.id in teamData) {
+                                input.value = teamData[input.id]
+                            }
+
+                            let br = document.createElement("br")
+                            th.append(br, input)
+                        } else if (elm.type == "select") {
+                            let input = document.createElement("select")
+                            input.id = `${key}-${elm.value}`
+
+                            for (let item of elm.values) {
+                                let option = document.createElement("option")
+                                option.value = `${key}-${elm.name}-${item.value}`
+                                option.innerText = item.name
+
+                                if (input.id in teamData) {
+                                    if (teamData[input.id] == option.value) {
+                                        option.selected = true
+                                    }
+                                }
+
+                                input.append(option, br)
+                            }
+                            dataElms[input.id] = input
+
+                            th.append(input)
+                        }
+
+
+                        // keyDiv.append(inputDiv)
+                    }
+                }
+
+            }
+        })
+    </script>
+</body>
+
+</html>

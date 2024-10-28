@@ -10,6 +10,8 @@ This app was built for the 2023-2024 Vex game (Over Under)
 
 # Images
 
+![Bla](docs/imgs/main.png)
+![Bla](docs/imgs/team.png)
 ![Bla](docs/imgs/time.png)
 ![Bla](docs/imgs/teamInfo.png)
 
@@ -20,20 +22,20 @@ This app was built for the 2023-2024 Vex game (Over Under)
 
 [How to](/docs/howTo.md)
 
-# Plans
+[Data Layout](/docs/layout.md)
 
-- [ ] Division selector
-- [ ] Make diff database per game season
-- [x] Make it so you can easily change the layout of the data (Will save to game database so you can switch between games)
-- [ ] Video support (for both team info and matches!)
+[Todo](/TODO.md)
 
-After SSR rework:
+# Versions
 
-- [x] Show matches on team page
-- [ ] Faster UI travel using only one page and changing HTML
-- [ ] Nav bar, quick links, favorites...
-    - [ ] Nav
-    - [ ] Quick links
-    - [ ] Favs
+# 2.0.0
 
-(The Cata is in an array, this would make it a drop down menu, if its in an object (like the hang and auton) means that it will make checkboxes)
+2.0.0 is out! After along time of dreading, I did it!
+
+**this breaks the 1.0.0 layouts! Old data will not load/work!**
+
+- Replaced knex with quick.db (downgrade ngl)
+- Remade data layout to be better and more expandable
+- SSR (Server-Side-Rendering) is now being worked on, it's only used for the teams matches preview where SSR is used
+- JS files can now be used for layouts
+- A new `Table editor` is in the works! (planed to be done in `2.1.0`)

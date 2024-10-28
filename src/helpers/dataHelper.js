@@ -1,103 +1,23 @@
 let rApi = require("./robotApi")
-const knex = require("./knex")
+const database = require("./database")
 const fs = require("fs")
 let isString = value => typeof value === 'string' || value instanceof String;
 
 class eventData {
     constructor(eventID) {
         this.eventID = eventID
-        this.eventDatabase = `event-${this.eventID}`
+        this.eventDatabase = `event_${this.eventID}`
+        this.database = database.table(this.eventDatabase)
+        this.database.useNormalKeys(true)
     }
 
     async create() {
-        let eventData = await (await rApi.event(this.eventID)).getData()
-        let dataRaw = fs.readFileSync(`./layout/${eventData.season.id}.json`)
-        let dataLayout = JSON.parse(dataRaw)
-        if (!await knex.schema.hasTable(this.eventDatabase)) {
-            await knex.schema.createTable(this.eventDatabase, async (table) => {
-                table.bigInteger("teamID").primary() // 139679
-                table.text("teamNumber") // 6627Y
-                table.specificType("picture", "LONGBLOB") // <Picture of robot>
-
-                for (let key in dataLayout) {
-                    let data = dataLayout[key]
-
-                    let dType = typeof data
-                    if (isString(data)) dType = data.toLowerCase()
-
-                    switch (dType) {
-                        case "boolean": {
-                            table.boolean(key)
-                            break
-                        }
-                        case "string": {
-                            table.string(key, 9999999)
-                            break
-                        }
-                        case "object": {
-                            table.integer(key)
-                            break
-                        }
-                    }
-                }
-
-                // table.boolean("intake") // True - False
-                // table.boolean("push") // True - False
-                // table.boolean("wings") // True - False
-                // table.integer("auton") // ["far", "near"]
-                // table.integer("hang") // ["passive", "break"]
-                // table.integer("cata") // ["arm", "flywheel", "other"]
-                // table.text("notes") // Bla bla xyz bla bla
-            })
-            return true
-        }
-        let cols = await knex.table(this.eventDatabase).columnInfo()
-
-        knex.schema.table(this.eventDatabase, async (table) => {
-            let added = []
-            for (let key in dataLayout) {
-                added.push(key)
-                if (cols[key]) {
-                    // TODO: Check if this is the right type
-                    continue
-                }
-                let data = dataLayout[key]
-
-                let dType = typeof data
-                if (isString(data)) dType = data.toLowerCase()
-
-                console.log("type", key, dType)
-
-                switch (dType) {
-                    case "boolean": {
-                        table.boolean(key)
-                        break
-                    }
-                    case "string": {
-                        table.string(key, 9999999)
-                        break
-                    }
-                    case "object": {
-                        table.integer(key)
-                        break
-                    }
-                    case "number": {
-                        table.integer(key)
-                        break
-                    }
-                }
-            }
-            for (let col in cols) {
-                if (added.includes(col)) continue
-                table.dropColumn(col)
-            }
-        })
-
-        return false
+        await this.database.init()
+        return true
     }
     async getTeamData(teamID) {
         await this.create()
-        return await knex(this.eventDatabase).where({ teamID: teamID }).first()
+        return await this.database.get(`teams.${teamID}`)
     }
     /**
      * 
@@ -115,43 +35,11 @@ class eventData {
      */
     async updateTeamData(teamID, putData) {
         await this.create()
-        let data = await this.getTeamData(teamID)
-        if (data) {
-            await knex(this.eventDatabase).where({ teamID: teamID }).update(putData)
-        } else {
-            putData.teamID = teamID
-            await knex(this.eventDatabase).insert(putData)
-        }
+        let ogData = await this.database.get(`teams.${teamID}`)
+        await this.database.set(`teams.${teamID}`, {...ogData, ...putData})
     }
 }
-
-
-async function rAPI_cacheCheck() {
-    try {
-        if (!await knex.schema.hasTable("cache")) await knex.schema.createTable("cache", (table) => {
-            table.text("url")
-            table.date("created")
-            table.text("data")
-        })
-    } catch (e) { }
-}
-
-async function rAPI_findCache(url) {
-    await rAPI_cacheCheck()
-    return await knex("cache").where("url", url).first()
-}
-
-async function rAPI_updateCache(url, data) {
-    await rAPI_cacheCheck()
-    await knex("cache").where("url", url).delete()
-    await knex("cache").insert({ url: url, created: new Date(), data: data })
-}
-
 
 module.exports = {
-    eventData,
-    robotAPICache: {
-        find: rAPI_findCache,
-        update: rAPI_updateCache
-    }
+    eventData
 }
