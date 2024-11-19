@@ -27,6 +27,7 @@ app.get("/t/:teamNumber", async (req, res) => {
 
   let eventsHTML = ""
   let events = await team.getEvents()
+  
   for (let event of events) {
     let realDate = event.start.split("T").shift().split("-")
     let date = new Date()
@@ -35,6 +36,7 @@ app.get("/t/:teamNumber", async (req, res) => {
     let locString = `${event.location.address_1}${event.location.address_2 ? ", " + event.location.address_2: ""}, ${event.location.city}, ${event.location.region}, ${event.location.country}`
     eventsHTML += `
     <div class="match">
+      <h2>${event.name}</h2>
       <h3>Where:  <a>${locString}</a> <a href="https://www.google.com/maps/search/${locString.replaceAll(" ", "+")}" target="_blank">(Google Maps)</a> <a href="https://maps.apple.com/?address=${locString.replaceAll(" ", "+")}" target="_blank">(Apple Maps)</a></h3>
       <h3>Venue: ${event.location.venue}</h3>
       <h3>When: ${date.toLocaleDateString()} (${Math.round((date.valueOf() - today.valueOf())/1000/60/60/24)} days)</h3>
