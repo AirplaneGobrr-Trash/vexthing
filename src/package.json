@@ -1,6 +1,6 @@
 {
   "name": "vexThing",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A vex scouting app!",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,7 @@
     "function-cache": "^1.0.5",
     "multer": "1.4.5-lts.1",
     "quick.db": "^9.1.7",
+    "socket.io": "^4.8.1",
     "sqlite3": "^5.1.6"
   }
 }

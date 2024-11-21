@@ -284,7 +284,31 @@ app.get('/team/:eventID/:teamID', async (req, res) => {
   res.render("team", { teamNumber: teamData.number })
 });
 
+io.on("connection", (socket)=>{
+  console.log("User connected!")
+
+  socket.on("update", async (data)=>{
+    console.log(data)
+
+    if ("eventID" in data && "teamID" in data && "update" in data) {
+      let eventID = data.eventID
+      let teamID = data.teamID
+
+      let event = await utils.getEventData(eventID)
+      const teamData = await (await rApi.team(teamID)).getData()
+
+      await event.updateTeamData(teamID, {
+        teamNumber: teamData.number,
+        ...data.update
+      })
+    }
+
+    io.emit("update", data)
+  })
+})
+
 server.listen(3100, () => {
   console.log('listening on *:3100');
 });
+
 //<script src='/socket.io/socket.io.js'></script>

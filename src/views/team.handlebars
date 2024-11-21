@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{teamNumber}} - Team</title>
     <link rel="stylesheet" href="/static/style/main.css">
+    <script src='/socket.io/socket.io.js'></script>
 </head>
 
 <body>
@@ -26,13 +27,12 @@
 
     <hr>
 
-    <form id="skills">
+    <form id="teamForm">
 
         <div id="data" class="matchHolder"></div>
-
         <hr>
-
         <input type="submit" id="save" value="Save"><input type="submit" id="cancel" value="Cancel">
+        <p>data is auto saved!</p>
     </form>
 
     <h1 class="collapsible active">Teams Matches:</h1>
@@ -42,16 +42,57 @@
     </div>
 
     <script defer>
+        const socket = io()
         const splitURL = window.location.pathname.split("/")
         const teamID = splitURL.pop()
         const eventID = splitURL.pop()
         console.log(teamID)
 
+        socket.on("update", (data)=>{
+            console.log(data)
+            if (data?.teamID == teamID && data?.eventID == eventID && data?.update) {
+                for (let type in data.update) {
+                    console.log(type, data.update[type])
+
+                    let elm = document.getElementById(type)
+                    if (elm.type == "checkbox") {
+                        elm.checked = data.update[type]
+                    } else {
+                        elm.value = data.update[type]
+                    }
+                    console.log(elm, elm.checked, elm.value)
+
+                }
+            }
+        })
+
+        function update(event) {
+            event.preventDefault()
+            let elm = event.target
+            // let teamID = elm.get
+            console.log("update", elm.value, elm.checked, elm.getAttribute("teamid"), elm.nodeName)
+
+            let toSend = {}
+            toSend[elm.id] = elm.value
+
+            if (elm.type == "checkbox") {
+                toSend[elm.id] = elm.checked
+            }
+
+            console.log(toSend)
+
+            socket.emit("update", {
+                teamID: teamID,
+                eventID: eventID,
+                update: toSend
+            })
+        }
+
         let dataLayout = {}
         let dataElms = {}
         let teamData = {}
 
-        const skillsElm = document.getElementById("skills")
+        const teamFormElm = document.getElementById("teamForm")
         const dataElm = document.getElementById("data")
         const imageElm = document.getElementById("image")
         const pictureElm = document.getElementById("updatePicture")
@@ -126,7 +167,7 @@
             xhr.send(toSend);
         };
 
-        skillsElm.onsubmit = (event) => {
+        teamFormElm.onsubmit = (event) => {
             event.preventDefault()
             let subType = event.submitter.value.toLowerCase()
             if (subType == "save") {
@@ -152,6 +193,11 @@
                 }
                 console.log(dataElms, dataLayout)
                 console.log("toSend", toSend, teamData)
+                socket.emit("update", {
+                    teamID: teamID,
+                    eventID: eventID,
+                    update: toSend
+                })
                 fetch(`/api/team/upload/${eventID}/${teamID}`, { method: "POST", body: JSON.stringify(toSend), headers: { "Content-Type": "application/json" } }).then((r) => {
                     alert("Updated data!")
                 })
@@ -213,6 +259,7 @@
                         }
                         dataElms[input.id] = input
                         inputDiv.append(input)
+                        input.onchange = update
                     } else if (elm.type == "textbox") {
                         let input = document.createElement("textarea")
                         input.id = `${key}-${elm.value}`
@@ -225,6 +272,7 @@
 
                         let br = document.createElement("br")
                         inputDiv.append(br,input)
+                        input.onchange = update
                     } else if (elm.type == "select") {
                         let input = document.createElement("select")
                         input.id = `${key}-${elm.value}`
@@ -245,6 +293,7 @@
                         dataElms[input.id] = input
 
                         inputDiv.append(input)
+                        input.onchange = update
                     }
                     
                     
@@ -253,7 +302,7 @@
                 let br = ""//document.createElement("hr")
                 dataElm.append(keyDiv, br)
             }
-            alert("Loaded data!")
+            // alert("Loaded data!")
         }
         loadData()
 

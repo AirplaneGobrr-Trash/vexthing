@@ -28,6 +28,15 @@ This app was built for the 2023-2024 Vex game (Over Under)
 
 # Versions
 
+# 2.1.0
+
+- Table editor now works!
+- Scout sheet now auto saves!
+- Using socket.io to sync table editor and team editor
+    - You can edit team data at the same time across people!
+- The "Save" button is still in place if you get knocked offline for a second, if you have a stable connection then this isn't needed
+- Docs for the [Data Layout](/docs/layout.md) are done!
+
 # 2.0.0
 
 2.0.0 is out! After along time of dreading, I did it!
@@ -38,4 +47,4 @@ This app was built for the 2023-2024 Vex game (Over Under)
 - Remade data layout to be better and more expandable
 - SSR (Server-Side-Rendering) is now being worked on, it's only used for the teams matches preview where SSR is used
 - JS files can now be used for layouts
-- A new `Table editor` is in the works! (planed to be done in `2.1.0`)
+- A new `Table editor` is in the works! (planed to be done in `2.1.0`!)
