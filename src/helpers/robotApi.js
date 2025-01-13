@@ -2,7 +2,9 @@ const axios = require("axios")
 const fs = require("fs")
 const apiKey = require("../config.json").robotEventsAPI
 const eApi = new axios.Axios({baseURL: "https://www.robotevents.com/api/v2/", headers: {
-    Authorization: `Bearer ${apiKey}`
+    Authorization: `Bearer ${apiKey}`,
+    Accept: "application/json",
+    "User-Agent": "Nodejs/201800 Axios/010600 APGBVexThing/020200"
 }})
 
 const robotAPICache = require("./cacheHelper")
@@ -93,7 +95,7 @@ async function doGet(url, refreshTimeMins = 60){
         await robotAPICache.update(url, data)
         return data
     } catch (e) {
-        console.log(e)
+        console.log(e, dataRaw)
         console.log(url)
         fs.writeFileSync("error.html", dataRaw.data)
         return {}
@@ -112,19 +114,19 @@ class eventC {
         return data
     }
     async getMacthes(divID, page = 1) {
-        let data = await doGet(`/events/${this.eventID}/divisions/${divID}/matches?page=${page}&per_page=100`,1)
+        let data = await doGet(`/events/${this.eventID}/divisions/${divID}/matches?page=${page}&per_page=250`,1)
         return data.data
     }
     async getSkills(page = 1) {
-        let data = await doGet(`/events/${this.eventID}/skills?page=${page}&per_page=100`,2)
+        let data = await doGet(`/events/${this.eventID}/skills?page=${page}&per_page=250`,2)
         return data.data
     }
     async getTeams(page = 1){
-        let data = await doGet(`/events/${this.eventID}/teams?page=${page}&per_page=100`, 5)
+        let data = await doGet(`/events/${this.eventID}/teams?page=${page}&per_page=250`, 5)
         return data.data
     }
     async getRankings(divID, page = 1) {
-        let data = await doGet(`/events/${this.eventID}/divisions/${divID}/rankings?page=${page}&per_page=100`, 1)
+        let data = await doGet(`/events/${this.eventID}/divisions/${divID}/rankings?page=${page}&per_page=250`, 1)
         return data.data
     }
 }

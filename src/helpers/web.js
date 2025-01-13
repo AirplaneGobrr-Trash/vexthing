@@ -14,6 +14,9 @@ app.set("views", "./views");
 const bp = require("body-parser")
 app.use(bp.json({limit: "100mb"}))
 
+const cookie = require("cookie-parser")
+app.use(cookie("apgb-vexthing"))
+
 module.exports = {
     express, app, http, server, io
 }

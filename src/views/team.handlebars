@@ -45,8 +45,13 @@
         const socket = io()
         const splitURL = window.location.pathname.split("/")
         const teamID = splitURL.pop()
+        splitURL.pop() // remove /team part
         const eventID = splitURL.pop()
         console.log(teamID)
+
+        let divID = 1
+        let s = new URLSearchParams(window.location.search)
+        if (s.has("div")) divID = s.get("div")
 
         socket.on("update", (data)=>{
             console.log(data)
@@ -99,7 +104,7 @@
         const uploadElm = document.getElementById("upload")
 
         const matchesElm = document.getElementById("teamMatches")
-        fetch(`/times/${eventID}/1/${teamID}/html?type=teamMatches`).then(async (res) => {
+        fetch(`/event/${eventID}/${divID}/html?team=${teamID}&type=teamMatches`).then(async (res) => {
             let json = await res.json()
             matchesElm.innerHTML = json.teamMatches
         })

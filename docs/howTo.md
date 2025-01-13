@@ -16,7 +16,7 @@ Make sure you add the layout you want [here](/src/layout) Use the [example](/src
 
 This has the teams defined, the main teams will be bigger then teams
 
-# Team page (`/t/<teamNumber>`)
+# Team page (`/team/<teamNumber>`)
 
 ![Boxes with info about events, Where, Venue, When, Goto Page](imgs/team.png)
 
@@ -32,7 +32,7 @@ When: The Date of when the event is and then how long until the event starts/end
 
 Goto Page: Opens the page to see matches and other teams
 
-# Event page (`/time/<eventID>/<divID>/<teamID>`)
+# Event page (`/event/<eventID>/<divID>?team=<teamID/number>`)
 
 ![Read below](imgs/time.png)
 
@@ -57,7 +57,7 @@ The `skills` drop down will show you skills ranking
 
 **When clicking on any team it will open it in a new tab!**
 
-# Scouting Team (`/team/<eventID>/<teamID>`)
+# Scouting Team (`/event/<eventID>/team/<teamID/number>`)
 
 ![Team info](imgs/teamInfo.png)
 

@@ -11,8 +11,8 @@
 <body>
     <label for="shift">Shift time:</label>
     <input type="number" id="shift">
-    <button onclick="reloadResults()">Update</button>
-    <a href="/teams/{{eventID}}/editor">Open Table editor</a>
+    <button onclick="loadHTML()">Update</button>
+    <a href="/event/{{eventID}}/team/editor">Open Table editor</a>
 
     <h1 class="collapsible active">Our Matches:</h1>
     <div class="content">
@@ -171,7 +171,11 @@
         }
 
         async function loadHTML(){
-            let html = await (await fetch(window.location.href+"/html")).json()
+            let loc = window.location
+            let s = new URLSearchParams(loc.search)
+            s.set("shift", shiftElm.value)
+
+            let html = await (await fetch(`${loc.pathname}/html?${s.toString()}`)).json()
             console.log(html)
             ourMatchesElm.innerHTML = html.teamMatches
             matchesElm.innerHTML = html.matches

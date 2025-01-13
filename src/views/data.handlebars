@@ -95,7 +95,7 @@
                 let tr = document.createElement("tr")
 
                 let th = document.createElement("th")
-                th.innerHTML = `<a href="/team/${eventID}/${teamID}">${teamData?.teamNumber} (${teamID})</a>`
+                th.innerHTML = `<a href="/event/${eventID}/team/${teamID}">${teamData?.teamNumber} (${teamID})</a>`
                 tr.append(th)
 
                 table.append(tr)

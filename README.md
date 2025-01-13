@@ -1,50 +1,76 @@
 # Vex Scouting
 
-This is an app that helps with scouting!
+An app designed to streamline scouting during a Vex robotics competitions!
 
-HTML is rendered on the server for FAST speeds!
+- Server-Rendered HTML for "lightning-fast" speeds.
+- Initially created during the 2023-2024 Vex game (Over Under) and **fully** compatible with the 2024-2025 game (High Stakes).
+- Works Season after season without any* changes
 
-This app was built for the 2023-2024 Vex game (Over Under)
+⚠️ **Note: This app does not include a login page and is meant for on-site deployment only.**
 
-**KEEP IN MIND THIS APP HAS NO LOGIN PAGE AND IS DESIGNED TO BE DEPLOYED ON SITE**
+🚀 *A public version with a login system is planned for release with version `2.5.0`.*
 
-# Images
-
-![Bla](docs/imgs/main.png)
-![Bla](docs/imgs/team.png)
-![Bla](docs/imgs/time.png)
-![Bla](docs/imgs/teamInfo.png)
+### Developer's Note
+As a senior, this is my final year participating as a *Student* in Vex. However, I plan to remain involved and keep this project updated.
 
 
-# Help!
+# 🔮 Futures
 
-[API Layout](/docs/apiRoutes.md)
+- Match View:
+    - Streamlined interface for viewing matches.
 
-[How to](/docs/howTo.md)
+- Note-Taking per Team:
+    - Add and save notes specific to each team for better scouting and strategy planning.
 
-[Data Layout](/docs/layout.md)
+- Custom Data Layout:
+    - Flexibility to define and organize data layouts to suit preferences.
 
-[Todo](/TODO.md)
+# 📷 Screenshots
 
-# Versions
+![Main page picture](docs/imgs/main.png)
+![Team page picture](docs/imgs/team.png)
+![Match list picture](docs/imgs/time.png)
+![Team info picture](docs/imgs/teamInfo.png)
 
-# 2.1.0
 
-- Table editor now works!
-- Scout sheet now auto saves!
-- Using socket.io to sync table editor and team editor
-    - You can edit team data at the same time across people!
-- The "Save" button is still in place if you get knocked offline for a second, if you have a stable connection then this isn't needed
-- Docs for the [Data Layout](/docs/layout.md) are done!
+# 📖 Help Resources
 
-# 2.0.0
+- [API Layout](/docs/apiRoutes.md)
 
-2.0.0 is out! After along time of dreading, I did it!
+- [How to](/docs/howTo.md)
 
-**this breaks the 1.0.0 layouts! Old data will not load/work!**
+- [Data Layout](/docs/layout.md)
 
-- Replaced knex with quick.db (downgrade ngl)
-- Remade data layout to be better and more expandable
-- SSR (Server-Side-Rendering) is now being worked on, it's only used for the teams matches preview where SSR is used
-- JS files can now be used for layouts
-- A new `Table editor` is in the works! (planed to be done in `2.1.0`!)
+- [Todo](/TODO.md)
+
+# [🔖 Version History](./versions.md)
+
+## 2.2.0
+
+### 🌟 Enhancements
+- ⭐ Added div selector! ⭐
+- Renamed `times` to `matches` as it makes more sense
+- Main page will now show `Team` and `Event` buttons
+    - Plans coming to make the `Event` page a search page
+    - Plans coming to make the `Team` page have a search
+- Search Parameters:
+    - Reformatted the team URL to use search parameters for cleaner links.
+    - Added `div`, `shift`, and `team` as search parameters.
+- Better Version notes
+- Moved old [Versions](./versions.md)
+
+### 🐞 Bug Fixes
+- Fixed matches that are unscored showing a winning team
+- Fixed the `Shift time` not working in the match viewer (done via the `shift` search param)
+
+
+### 🛠️ Code Improvements
+- Moved `/team` and `/event` to there own router files
+- Added `User-Agent` to the axios request
+
+### 🚧 Work in Progress
+- WIP Session System (login system)
+
+# 📨 Contact Me
+
+Need help or want to connect? Message me on Discord: airplanegobrr
