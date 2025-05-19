@@ -2,7 +2,9 @@ const router = require("express").Router()
 const rApi = require("../helpers/robotApi")
 const utils = require("../helpers/utils")
 
-router.get("/", (req, res)=>{
+const user = require("../helpers/user")
+
+router.get("/", (req, res) => {
     res.render("event_search")
 })
 
@@ -33,7 +35,7 @@ router.get("/:eventID", async (req, res) => {
     })
 })
 
-router.get("/:eventID/:divID/html", async (req, res) => {
+router.get("/:eventID/:divID/html", user.fillUser, async (req, res) => {
     let eventID = req.params.eventID
     let divID = req.params.divID
 
@@ -41,7 +43,7 @@ router.get("/:eventID/:divID/html", async (req, res) => {
     let teamData = await rApi.team(teamIDraw)
     await teamData.check()
     let teamID = teamData.teamID
-    
+
     let toShift = Number(req.query.shift) || 0
 
     let sendingHTML = {
@@ -182,6 +184,8 @@ router.get("/:eventID/:divID/html", async (req, res) => {
     addedTeams = addedTeams.sort(utils.teamSort)
 
     let teamHasData = {}
+    let userID = req?.user?.id
+
     for (let teamInfo of addedTeams) {
         let teamID = teamInfo.teamID
         let team = await rApi.team(teamID)
@@ -190,12 +194,15 @@ router.get("/:eventID/:divID/html", async (req, res) => {
         if (!teamData) {
             continue
         }
-        let eventStoredData = await utils.getEventData(eventID)
-        let teamStoredData = await eventStoredData.getTeamData(teamID)
-        if (teamStoredData) {
-            let copy = JSON.parse(JSON.stringify(teamStoredData))
-            copy.picture = copy.picture ? 1 : 0
-            teamHasData[teamID] = copy ?? null
+
+        if (userID) {
+            let eventStoredData = await utils.getEventData(eventID, userID)
+            let teamStoredData = await eventStoredData.getTeamData(teamID)
+            if (teamStoredData) {
+                let copy = JSON.parse(JSON.stringify(teamStoredData))
+                copy.picture = copy.picture ? 1 : 0
+                teamHasData[teamID] = copy ?? null
+            }
         }
     }
 

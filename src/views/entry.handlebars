@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style/main.css">
+    <title>Entry</title>
+</head>
+
+<body>
+    <h1>Login</h1>
+    <form id="login">
+
+        <label for="username">Username</label>
+        <input type="text" name="username" required placeholder="Username"><br>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" required placeholder="Password"><br>
+
+        <button type="submit">Login in</button><br>
+
+    </form>
+
+
+    <h1>Signup</h1>
+    <form id="signup">
+        <label for="username">Username</label>
+        <input type="text" name="username" required placeholder="Username"><br>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" required placeholder="Password"><br>
+
+        <label for="password">Re-Enter Password</label>
+        <input type="password" name="repassword" required placeholder="Re-Enter Password"><br>
+
+
+        <button type="submit">Sign up</button>
+    </form>
+
+    <br><br>
+
+    <button id="logout">Logout</button>
+
+
+    <script defer>
+        const loginElm = document.getElementById("login")
+        const signupElm = document.getElementById("signup")
+        const logout = document.getElementById("logout")
+
+        function submit(e) {
+            e.preventDefault()
+            console.log(e)
+            let data = {
+                username: "",
+                password: "",
+                repassword: "",
+                type: ""
+            }
+            let formData = new FormData(e.target, e.submitter)
+            for (const [key, value] of formData) {
+                data[key] = value
+            }
+            console.log(data)
+
+            if (e.target.id == "login") {
+                data.type = "login";
+            } else if (e.target.id == "signup") {
+                data.type = "signup"
+                if (data.password != data.repassword) return alert("Passwords do not match!");
+                if (data.password.length <= 8) return alert("Password must be more then 8 chars!");
+            }
+
+            fetch("/entry", {
+                body: JSON.stringify({
+                    username: data.username,
+                    password: data.password,
+                    type: data.type
+                }),
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(resp => resp.json()).then(js => {
+                console.log(js)
+                if (js.good) window.location.pathname = "/"
+            })
+        }
+
+        loginElm.onsubmit = submit
+        signupElm.onsubmit = submit
+
+        logout.onclick = () => {
+            window.location.pathname = "/logout"
+        }
+    </script>
+</body>
+
+</html>

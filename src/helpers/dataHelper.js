@@ -1,18 +1,48 @@
-let rApi = require("./robotApi")
 const database = require("./database")
+const rApi = require("./robotApi")
+const path = require("path")
 const fs = require("fs")
-let isString = value => typeof value === 'string' || value instanceof String;
+const { QuickDB } = require("quick.db");
+
+const dataPath = path.join(__dirname, "..", "data")
+fs.mkdirSync("data", { recursive: true })
 
 class eventData {
-    constructor(eventID) {
+    constructor(eventID, userID) {
         this.eventID = eventID
-        this.eventDatabase = `event_${this.eventID}`
-        this.database = database.table(this.eventDatabase)
-        this.database.useNormalKeys(true)
+        this.userID = userID
+        this.lastUsed = new Date()
+    }
+
+    async close() {
+        this.database = null
+    }
+
+    async check() {
+        let event = await rApi.event(this.eventID)
+        let eventInfo = await event.getData()
+        let seasonID = (eventInfo.season.id).toString()
+
+        fs.mkdirSync(path.join(dataPath, seasonID), {recursive: true})
+
+        let db = new QuickDB({
+            filePath: path.join(dataPath, `${seasonID}/${this.eventID}.sqlite`)
+        })
+        db.useNormalKeys(true)
+        this.database = db.table(this.userID)
+
+        // TODO: Transfer old data
+        // let checkDB = database.table(`event_${this.eventID}`)
+        // checkDB.useNormalKeys(true)
+        // console.log("checkDB", checkDB)
+        // for (let old of await checkDB.all()) {
+        //     console.log("old", old)
+        // }
     }
 
     async create() {
         await this.database.init()
+        this.lastUsed = new Date()
         return true
     }
     async getTeamData(teamID) {
@@ -36,7 +66,7 @@ class eventData {
     async updateTeamData(teamID, putData) {
         await this.create()
         let ogData = await this.database.get(`teams.${teamID}`)
-        await this.database.set(`teams.${teamID}`, {...ogData, ...putData})
+        await this.database.set(`teams.${teamID}`, { ...ogData, ...putData })
     }
 }
 

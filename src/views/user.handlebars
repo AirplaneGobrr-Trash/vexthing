@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style/main.css">
+    <title>User</title>
+</head>
+
+<body>
+
+    <h3>{{username}} - {{userID}}</h3>
+
+
+    <table class="table" id="logins">
+        <thead>
+            <tr>
+                <th scope="col">SID</th>
+                <th scope="col">Last Ping (MS)</th>
+                <th scope="col">Logout</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+
+    <script defer>
+
+        async function load() {
+            fetch("/user/data").then(resp => resp.json()).then(async (js) => {
+                let currentSid = await (await fetch("/sid")).json()
+
+                console.log(js)
+                const loginsElm = document.getElementById("logins")
+                let tbody = loginsElm.children[1]
+                tbody.innerHTML = ""
+
+                for (let se of js.sessions) {
+                    console.log(se)
+                    let rowElm = document.createElement("tr")
+
+                    let sidElm = document.createElement("td")
+                    sidElm.innerText = se.sid
+                    if (currentSid?.sid == se.sid) sidElm.innerText = `${se.sid} (current)`
+
+                    let lastElm = document.createElement("td")
+                    lastElm.innerText = new Date() - new Date(se.last)
+
+                    let logoutElm = document.createElement("td")
+                    let logoutButton = document.createElement("button")
+                    logoutButton.classList.add("btn", "btn-danger")
+                    logoutButton.innerText = "Log out"
+                    logoutButton.onclick = () => {
+                        fetch(`/logout/${se.sid}`)
+                        load()
+                    }
+                    logoutElm.append(logoutButton)
+
+                    rowElm.append(sidElm, lastElm, logoutElm)
+                    tbody.append(rowElm)
+                }
+            })
+        }
+        load()
+    </script>
+</body>
+
+</html>

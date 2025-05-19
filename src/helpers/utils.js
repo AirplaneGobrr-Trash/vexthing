@@ -8,12 +8,26 @@ const eventDatas = {}
  * @param {Number} eventID
  * @returns {dataHelper.eventData}
  */
-async function getEventData(eventID) {
+async function getEventData(eventID, userID = "default") {
   let event = eventDatas[eventID]
   if (event) return event
-  eventDatas[eventID] = new dataHelper.eventData(eventID)
+  eventDatas[eventID] = new dataHelper.eventData(eventID, userID)
+  await eventDatas[eventID].check()
   return eventDatas[eventID]
 }
+
+setInterval(()=>{
+  for (let eventID in eventDatas) {
+    let event = eventDatas[eventID]
+
+    let diff = new Date()-event?.lastUsed
+    if ((diff/1000)/60 > 5) {
+      console.log(`Closing data for ${eventID}`)
+      event?.close()
+      delete eventDatas[eventID];
+    }
+  }
+}, 5 * 60 * 1000)
 
 async function getSeasonLayout(seasonID){
   let jsFile = path.join(__dirname, "..","layout", `${seasonID}.js`)

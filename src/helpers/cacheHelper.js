@@ -1,5 +1,4 @@
 const database = require("./database")
-console.log(database)
 const table = database.table("cache")
 
 async function rAPI_findCache(url) {
