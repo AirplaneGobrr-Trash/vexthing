@@ -261,8 +261,18 @@ router.get("/:eventID/:divID/html", async (req, res) => {
 })
 
 router.get("/:eventID/:divID", async (req, res) => {
+    let teamNumber = null
+    
+    if (req.query.team) {
+        // TODO: Make better, yikes bro.
+        let teamData = await rApi.team(req.query.team)
+        await teamData.check()
+        teamNumber = teamData.teamNumber;
+    }
+
     res.render("matches", {
-        eventID: req.params.eventID
+        eventID: req.params.eventID,
+        teamNumber: teamNumber
     })
 })
 
