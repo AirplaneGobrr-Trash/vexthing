@@ -1,3 +1,15 @@
+# Custom
+
+public/teams/*
+public/pictures/teams/*
+*.sqlite
+tmpData/*
+error.html
+config.json
+src/layout/*.json
+src/layout/*.js
+quickdb.json
+
 # Logs
 logs
 *.log
@@ -128,14 +140,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-
-# Custom
-
-public/teams/*
-public/pictures/teams/*
-*.sqlite
-tmpData/*
-error.html
-config.json
-src/layout/*.json
-src/layout/*.js
