@@ -41,6 +41,8 @@ router.get("/:eventID/:divID/html", async (req, res) => {
     let teamData = await rApi.team(teamIDraw)
     await teamData.check()
     let teamID = teamData.teamID
+    let mainTeamID = teamData.teamNumber.slice(0, -1);
+    console.log("mainTeamID", mainTeamID)
     
     let toShift = Number(req.query.shift) || 0
 
@@ -126,6 +128,8 @@ router.get("/:eventID/:divID/html", async (req, res) => {
             let html = ""
             if (team.teamID == teamID) {
                 html = `<a href="/event/${eventID}/team/${team.teamID}?div=${divID}" style="color:yellow;" target="_blank">${team.teamNumber}</a> `
+            } else if (team.teamNumber.includes(mainTeamID)) {
+                html = `<a href="/event/${eventID}/team/${team.teamID}?div=${divID}" style="color:pink;" target="_blank">${team.teamNumber}</a> `
             } else {
                 html += `<a href="/event/${eventID}/team/${team.teamID}?div=${divID}" target="_blank">${team.teamNumber}</a> `
             }
@@ -145,6 +149,7 @@ router.get("/:eventID/:divID/html", async (req, res) => {
             case "red": colorHTML = `<h2 style="color: ${redColor};">Team is red</h2>`; break;
         }
 
+        // Mark winning team with yellow (to make it pop!)
         if (blueScore > redScore) {
             blueScore = `<a style="color:yellow;">${blueScore}</a>`
         } else if (redScore > blueScore) {
