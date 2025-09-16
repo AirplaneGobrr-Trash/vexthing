@@ -1,0 +1,229 @@
+/* === Base Dark Theme === */
+body {
+    background-color: #222;
+    color: #eee;
+    font-family: "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+a {
+    color: #4da6ff;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* === Header / Navbar === */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1f1f1f;
+    padding: 12px 20px;
+    border-bottom: 2px solid #333;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+header h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #fff;
+}
+
+header nav {
+    display: flex;
+    gap: 15px;
+}
+
+header nav a {
+    color: #4da6ff;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+}
+
+header nav a:hover {
+    background-color: #4da6ff;
+    color: #222;
+}
+
+header .right a {
+    background-color: #ff8c42;
+    color: #222;
+    font-weight: bold;
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+header .right a:hover {
+    background-color: #ffa366;
+}
+
+/* === Buttons === */
+button {
+    background-color: #4da6ff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    margin: 5px 0;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+button:hover {
+    background-color: #3399ff;
+    transform: scale(1.03);
+}
+
+button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+/* Optional button groups */
+.button-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* === Match & Data Cards === */
+.matchHolder {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.match, .dataThing {
+    background: #333;
+    border: 2px solid #444;
+    border-radius: 8px;
+    margin: 8px;
+    padding: 12px 16px;
+    min-width: 120px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.match:hover, .dataThing:hover {
+    transform: scale(1.01);
+    border-color: orange;
+}
+
+.upcoming,
+.ourMatch {
+    border-color: yellow !important;
+}
+
+.sisterMatch {
+    border-color: pink;
+}
+
+.sisterTeam {
+    color: pink;
+}
+
+.highlight {
+    color: yellow;
+}
+
+.team_blue {
+    color: cyan;
+}
+
+.team_red {
+    color: red;
+}
+
+/* === Collapsible Headers === */
+.collapsible {
+    cursor: pointer;
+    background: #333;
+    padding: 14px 18px;
+    margin: 10px 0;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    transition: background 0.25s, border-color 0.25s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.collapsible:hover {
+    background: #444;
+}
+
+.collapsible:after {
+    content: '\002B';
+    font-weight: bold;
+    margin-left: 10px;
+    transition: transform 0.2s;
+}
+
+.active:after {
+    content: "\2212";
+}
+
+/* === Collapsible Content === */
+.content {
+    padding: 0 18px;
+    margin-bottom: 15px;
+    background: #2a2a2a;
+    border-radius: 8px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease-out, padding 0.25s ease-out;
+}
+
+/* === Tables (Dark Mode) === */
+table {
+    font-family: "Segoe UI", Roboto, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+    background: #2c2c2c;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+td, th {
+    border: 1px solid #444;
+    padding: 10px;
+}
+
+th {
+    background: #3a3a3a;
+    color: #fff;
+    text-align: left;
+}
+
+tr:nth-child(even) {
+    background-color: #2a2a2a;
+}
+
+/* === Responsive Adjustments === */
+@media screen and (max-width: 600px) {
+    header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    header nav {
+        margin-top: 10px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    header .right {
+        margin-top: 10px;
+    }
+}

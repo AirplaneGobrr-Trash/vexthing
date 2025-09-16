@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event selector</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+</head>
+<body>
+    <h1 id="team">{{teamNumber}}</h1>
+    <div id="events">
+        {{#each events}}
+        <div class="match {{#if comingUp}}upcoming{{/if}}">
+            <h2>{{this.name}}</h2>
+            <h3>Where: <a>{{this.locString}}</a> <a href="https://www.google.com/maps/search/{{this.locStringServices}}" target="_blank">(Google Maps)</a> <a href="https://maps.apple.com/?address={{this.locStringServices}}" target="_blank">(Apple Maps)</a></h3>
+            <h3>Venue: {{this.venue}}</h3>
+            <h3>When: {{this.date}} ({{this.countDown}} days)</h3>
+            <h3>Goto Page: <a href="/event/{{this.eventID}}?team={{../teamID}}">GO!</a>
+        </div>
+        {{/each}}
+    </div>
+
+    <script defer>
+    window.addEventListener("DOMContentLoaded", () => {
+        let upcomingElms = document.getElementsByClassName("upcoming");
+        if (upcomingElms.length > 0) {
+            upcomingElms[0].scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+    });
+    </script>
+
+</body>
+</html>

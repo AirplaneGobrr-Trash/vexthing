@@ -1,0 +1,53 @@
+{{#if testing}}
+
+<link rel="stylesheet" href="/static/styles/main.css">
+
+<div id="matches" class="matchHolder">
+{{/if}}
+
+
+{{#each matches}}
+<div class="match{{#if own}} ourMatch{{/if}}{{#if sisterOwn}} sisterMatch{{/if}}">
+
+    <h1>{{name}}</h1>
+
+    {{#if teamColor}}
+    <h2 class="team_{{teamColor}}">Team is {{teamColor}}</h2>
+    {{/if}}
+
+
+    <h2>Field: {{field}}</h2>
+    <p>Time Until (Minutes): {{#timeTill startTime}}{{this}}{{/timeTill}}</p>
+    <p>Start time: {{startTime}}</p>
+    
+    <p>
+        <a style="color:cyan;">Blue</a>:
+        ({{#gt blueScore redScore}}
+        <span class="highlight">{{../blueScore}}</span>
+        {{else}}
+        {{../blueScore}}
+        {{/gt}})
+
+        {{#each blueTeam}}
+            <a href="/event/{{@root.eventID}}/team/{{ID}}?div={{@root.divID}}" {{#if class}}class="{{class}}"{{/if}} target="_blank">{{number}}</a> 
+        {{/each}}
+    </p>
+    <p>
+        <a style="color:red;">Red</a>:
+        ({{#gt redScore blueScore}}
+        <span class="highlight">{{../redScore}}</span>
+        {{else}}
+        {{../redScore}}
+        {{/gt}})
+
+        {{#each redTeam}}
+            <a href="/event/{{@root.eventID}}/team/{{ID}}?div={{@root.divID}}" {{#if class}}class="{{class}}"{{/if}} target="_blank">{{number}}</a> 
+        {{/each}}
+    </p>
+
+</div>
+{{/each}}
+
+{{#if testing}}
+</div>
+{{/if}}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event - {{eventID}}</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+</head>
+
+<body>
+    <h1>{{name}}</h1>
+
+    <h2>Divisions</h2>
+    {{#each divs}}
+    <div>
+        <h3><a href="/event/{{../eventID}}/{{this.id}}{{../teamIDSearch}}">{{this.name}}</a></h3>
+    </div>
+    {{/each}}
+</body>
+
+</html>

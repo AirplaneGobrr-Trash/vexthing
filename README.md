@@ -45,32 +45,6 @@ As a senior, this is my final year participating as a *Student* in Vex. However,
 
 # [🔖 Version History](./versions.md)
 
-## 2.2.0
+## 3.0.0
 
-### 🌟 Enhancements
-- ⭐ Added div selector! ⭐
-- Renamed `times` to `matches` as it makes more sense
-- Main page will now show `Team` and `Event` buttons
-    - Plans coming to make the `Event` page a search page
-    - Plans coming to make the `Team` page have a search
-- Search Parameters:
-    - Reformatted the team URL to use search parameters for cleaner links.
-    - Added `div`, `shift`, and `team` as search parameters.
-- Better Version notes
-- Moved old [Versions](./versions.md)
-
-### 🐞 Bug Fixes
-- Fixed matches that are unscored showing a winning team
-- Fixed the `Shift time` not working in the match viewer (done via the `shift` search param)
-
-
-### 🛠️ Code Improvements
-- Moved `/team` and `/event` to there own router files
-- Added `User-Agent` to the axios request
-
-### 🚧 Work in Progress
-- WIP Session System (login system)
-
-# 📨 Contact Me
-
-Need help or want to connect? Message me on Discord: airplanegobrr
+-- WIP --

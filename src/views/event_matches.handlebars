@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event View{{#if teamNumber}} - {{teamNumber}}{{/if}}</title>
+    <link rel="stylesheet" href="/static/styles/main.css">
+</head>
+
+<body>
+    <label for="shift">Shift time:</label>
+    <input type="number" id="shift">
+    <button onclick="loadHTML()">Update</button>
+    <a href="/event/{{eventID}}/team/editor">Open Table editor</a>
+
+    <h1 class="collapsible active">Our Matches:</h1>
+    <div class="content">
+        <div id="ourMatches" class="matchHolder">
+            {{{ownMatchesHTML}}}
+        </div>
+    </div>
+
+    <hr>
+
+    <h1 class="collapsible">All Matches:</h1>
+    <div class="content">
+        <div id="matches" class="matchHolder">
+            {{{matchesHTML}}}
+        </div>
+    </div>
+
+    <hr>
+
+    <h1 class="collapsible">Teams:</h1>
+    <div class="content">
+        <h2><a style="color:blue;">Blue</a> = Loading, <a style="color: red;">Red</a> = No data, <a
+                style="color: green;">Green</a> = has data (no picture), <a style="color: lime;">Lime</a> = has data (w
+            picture)</h2>
+        <button onclick="sortTeams_Rank(this)">Sort Rank</button>
+        <button onclick="sortTeams_Number(this)">Sort Number</button>
+        <div id="teams">
+        </div>
+    </div>
+
+    <hr>
+
+    <h1 class="collapsible">Skills:</h1>
+    <div class="content">
+        <div id="skills">
+        </div>
+    </div>
+
+    <script defer>
+        const ourMatchesElm = document.getElementById("ourMatches")
+        const matchesElm = document.getElementById("matches")
+        const teamsElm = document.getElementById("teams")
+        const skillsElm = document.getElementById("skills")
+        const shiftElm = document.getElementById("shift")
+
+        const splitURL = window.location.pathname.split("/")
+        const teamID = splitURL.pop()
+        const divID = splitURL.pop()
+        const eventID = splitURL.pop()
+
+        function sort(a, b) {
+            const aNumber = parseInt(a.teamNumber.match(/\d+/)[0]);
+            const bNumber = parseInt(b.teamNumber.match(/\d+/)[0]);
+
+            // Compare the numeric parts
+            if (aNumber < bNumber) {
+                return -1;
+            } else if (aNumber > bNumber) {
+                return 1;
+            } else {
+                // If the numeric parts are equal, compare the letters
+                const aLetters = a.teamNumber.match(/[A-Za-z]+/)[0];
+                const bLetters = b.teamNumber.match(/[A-Za-z]+/)[0];
+
+                return aLetters.localeCompare(bLetters);
+            }
+        }
+
+        async function sortTeams_Number(button) {
+            button.disabled = true
+            console.log("Function called!", button);
+            let elms = [];
+            console.log(teamsElm);
+
+            for (let elm of teamsElm.children) {
+                console.log(elm);
+
+                let tNumber = elm.id;
+                elms.push({ teamNumber: tNumber, elm: elm });
+            }
+
+            elms = elms.sort(sort);
+            console.log(elms);
+
+            // Remove elements from the parent after sorting
+            for (let elm of elms) {
+                elm.elm.remove();
+            }
+
+            for (let elm of elms) {
+                console.log(elm);
+                teamsElm.append(elm.elm);
+            }
+            button.disabled = false
+        }
+
+        function sortTeams_Rank(button) {
+            button.disabled = true
+            console.log("Function called!", button);
+            let elms = [];
+            console.log(teamsElm);
+
+            for (let elm of teamsElm.children) {
+                console.log(elm);
+
+                // Make sure to check if the elements have the expected structure
+                let rankElement = elm.children[0].children[0];
+                if (rankElement && rankElement.textContent) {
+                    let rank = Number(rankElement.textContent.split(".").shift());
+                    elms.push({ rank: rank, elm: elm });
+                }
+            }
+
+            elms = elms.sort((a, b) => a.rank - b.rank);
+            console.log(elms);
+
+            // Remove elements from the parent after sorting
+            for (let elm of elms) {
+                elm.elm.remove();
+            }
+
+            for (let elm of elms) {
+                console.log(elm);
+                teamsElm.append(elm.elm);
+            }
+            button.disabled = false
+        }
+
+        function sortSkills_Rank() {
+            // button.disabled = true
+            // console.log("Function called!", button);
+            let elms = [];
+            console.log(skillsElm);
+
+            for (let elm of skillsElm.children) {
+                console.log(elm);
+
+                // Make sure to check if the elements have the expected structure
+                let rankElement = elm.children[0].children[0];
+                if (rankElement && rankElement.textContent) {
+                    let rank = Number(rankElement.textContent.split(".").shift());
+                    if (!rank) continue
+                    elms.push({ rank: rank, elm: elm });
+                }
+            }
+
+            elms = elms.sort((a, b) => a.rank - b.rank);
+            console.log("sorted elms", elms);
+
+            // Remove elements from the parent after sorting
+            for (let elm of elms) {
+                elm.elm.remove();
+            }
+
+            for (let elm of elms) {
+                console.log(elm);
+                skillsElm.append(elm.elm);
+            }
+            // button.disabled = false
+        }
+
+        if (false) {
+            async function loadHTML() {
+                let loc = window.location
+                let s = new URLSearchParams(loc.search)
+                s.set("shift", shiftElm.value)
+
+                let html = await (await fetch(`${loc.pathname}/html?${s.toString()}`)).json()
+                console.log(html)
+                ourMatchesElm.innerHTML = html.teamMatches
+                matchesElm.innerHTML = html.matches
+                teamsElm.innerHTML = html.teams
+                skillsElm.innerHTML = html.skills
+                sortSkills_Rank()
+                sortTeams_Rank({ disabled: false })
+                window.loadTime = new Date()
+                window.asked = false
+            }
+
+            window.onload = loadHTML
+        }
+    </script>
+    <script defer>
+        let coll = document.getElementsByClassName("collapsible");
+        console.log(coll)
+
+        function updateCol(elm) {
+            let content = elm.nextElementSibling;
+            if (content.style.maxHeight && !elm.classList.contains("active")) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        for (let i = 0; i < coll.length; i++) {
+            let col = coll[i];
+            col.addEventListener("click", function () {
+                console.log("!")
+                col.classList.toggle("active");
+                updateCol(col)
+            });
+
+            setInterval(() => {
+                if (col.classList.contains("active")) {
+                    updateCol(col)
+                }
+            }, 100)
+        }
+
+        window.loadTime = Infinity
+        let reloadTime = 5 * 60 * 1000;
+        window.asked = false;
+
+        let check = setInterval(() => {
+            if (new Date() - window.loadTime > reloadTime) {
+                if (!asked) {
+                    window.asked = true
+                    let e = confirm(`It has been ${(new Date() - window.loadTime) / 1000 / 60} minutes since the page has been updated, Update?`)
+                    if (e) {
+                        loadHTML()
+                    } else {
+                        window.asked = false
+                        window.loadTime = new Date() // ask again in 5 minutes
+                    }
+                }
+            }
+        }, 1000)
+    </script>
+</body>
+
+</html>
