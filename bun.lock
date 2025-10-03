@@ -4,10 +4,12 @@
     "": {
       "name": "vexthing",
       "dependencies": {
+        "@airplanegobrr/bunorm": "^0.0.1",
         "bunorm": "^0.0.1",
         "bunrest": "^1.3.8",
         "express-handlebars": "^8.0.3",
         "handlebars": "^4.7.8",
+        "@airplanegobrr/bunrest": "https://github.com/AirplanegoBrr/bunrest.git",
         "preact": "^10.27.2",
         "robotevents": "^6.0.4",
         "robotevents-api": "^0.4.0",
@@ -21,6 +23,10 @@
     },
   },
   "packages": {
+    "@airplanegobrr/bunorm": ["@airplanegobrr/bunorm@0.0.1", "", {}, "sha512-rqES+piDqdWmg+hrmMhZepHXcCQ41MsbK8ayXt9yvRECtZVm7QlRqWJ0Ez/BVlAFPhfPf2QkYCYbAMpT6r6+RA=="],
+
+    "@airplanegobrr/bunrest": ["@airplanegobrr/bunrest@github:AirplanegoBrr/bunrest#d1dcadd", {}, "AirplanegoBrr-bunrest-d1dcadd"],
+
     "@isaacs/balanced-match": ["@isaacs/balanced-match@4.0.1", "", {}, "sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ=="],
 
     "@isaacs/brace-expansion": ["@isaacs/brace-expansion@5.0.0", "", { "dependencies": { "@isaacs/balanced-match": "^4.0.1" } }, "sha512-ZT55BDLV0yv0RBm2czMiZ+SqCGO7AvmOM3G/w2xhVPH+te0aKgFjmBvGlL1dH+ql2tgGO3MVrbb3jCKyvpgnxA=="],

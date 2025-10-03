@@ -17,6 +17,17 @@ const hbs = new Handlebars.ExpressHandlebars({
 
 // This is the best thing EVER!
 export const contextAdder: Handler = async (req, res, next) => {
+    req.revTime = performance.now();
+
+    const originalSend = res.send;
+
+    res.send = function (body: any): any {
+        const elapsed = performance.now() - req.revTime;
+        console.log(`Response (${req.originalUrl}) time:`, elapsed, "ms");
+
+        // keep res context intact
+        return originalSend.call(this, body);
+    };
 
     res.renderRaw = async (sheet, options = {}) => {
         let renderView = await hbs.render(path.join(__dirname, "..", "views", `${sheet}.handlebars`), {
@@ -32,13 +43,7 @@ export const contextAdder: Handler = async (req, res, next) => {
         let renderView = await res.renderRaw(sheet, options);
         res.send(renderView);
     };
-
-    res.cookie = (name, value, options = {}) => {
-        req.cookies.set(name, value, options);
-        res.setHeader("Set-Cookie", req.cookies.toSetCookieHeaders());
-    };
-
-    req.cookies = new Bun.CookieMap(req.headers?.["cookie"]);
+    
     req.added = true;
     res.locals = {};
     next?.();

@@ -1,8 +1,8 @@
-import type { BunRequest } from "bunrest/src/server/request";
-import type { BunResponse } from "bunrest/src/server/response";
-import type { Handler } from "bunrest/src/server/request";
-import type { Router } from "bunrest/src/router/router";
-import type { BunServer } from "bunrest/src/server/server";
+import type { BunRequest } from "@airplanegobrr/bunrest/src/server/request";
+import type { BunResponse } from "@airplanegobrr/bunrest/src/server/response";
+import type { Handler } from "@airplanegobrr/bunrest/src/server/request";
+import type { Router } from "@airplanegobrr/bunrest/src/router/router";
+import type { BunServer } from "@airplanegobrr/bunrest/src/server/server";
 
 
 interface BunRequest extends BunRequest {}

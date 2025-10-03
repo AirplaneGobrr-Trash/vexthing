@@ -1,4 +1,4 @@
-import bunrest from "bunrest";
+import bunrest from "@airplanegobrr/bunrest";
 
 const app = bunrest();
 
@@ -27,75 +27,9 @@ app.get("/", async (req, res) => {
     await res.render("home");
 });
 
-app.get("/match", async (req, res) => {
-    
-    await res.render("api/matches", {
-        eventID: 123456,
-        divID: 1,
-        testing: true,
-
-        matches: [{
-            name: "testing",
-            field: "6",
-            startTime: "2025-09-14T10:30:00",
-            blueScore: 10,
-            redScore: 15,
-
-            blueTeam: [
-                {
-                    number: "6627S",
-                    ID: 1234,
-                    class: "highlight"
-                },
-                {
-                    number: "6627A",
-                    ID: 1234
-                }
-            ],
-            redTeam: [
-                {
-                    number: "6627Y",
-                    ID: 1234
-                },
-                {
-                    number: "6627B",
-                    ID: 1234
-                }
-            ]
-        },
-        {
-            name: "testing",
-            teamColor: "blue",
-            field: "6",
-            startTime: "2025-09-15T23:30:00",
-            blueScore: 10,
-            redScore: 15,
-
-            blueTeam: [
-                {
-                    number: "6627S",
-                    ID: 1234,
-                    class: "highlight"
-                },
-                {
-                    number: "6627A",
-                    ID: 1234
-                }
-            ],
-            redTeam: [
-                {
-                    number: "6627Y",
-                    ID: 1234
-                },
-                {
-                    number: "6627B",
-                    ID: 1234
-                }
-            ]
-        }]
-    })
-})
-
+app.get("/entry", (req, res) => {
+    res.send("WIP")
+});
 
 const port = 3100;
 app.listen(port, () => {

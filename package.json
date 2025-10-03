@@ -10,6 +10,8 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@airplanegobrr/bunorm": "^0.0.1",
+    "@airplanegobrr/bunrest": "https://github.com/AirplanegoBrr/bunrest.git",
     "bunorm": "^0.0.1",
     "bunrest": "^1.3.8",
     "express-handlebars": "^8.0.3",

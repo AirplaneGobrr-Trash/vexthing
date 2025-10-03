@@ -2,6 +2,8 @@ import { Client, Event, Team } from "robotevents"
 import type { components } from "../../node_modules/robotevents/out/generated/robotevents" // https://tenor.com/lFHZ8oUJv46.gif
 import config from "../config.json"
 
+import * as cache from "./cache"
+
 const rAPI = Client({
     authorization: {
         token: config.robotEventsAPI
@@ -10,34 +12,11 @@ const rAPI = Client({
 
 const program = "V5RC";
 
-async function getTeamData(opt: { number?: string, id?: number }) {
-    // TODO: Make DB calls to check if contains rows that match "teamID" or "teamData" and fill from there
-    // let tDataCache = new Team({
-    //     id: 1,
-    //     number: "123S",
-    //     program: {
-    //         id: rAPI.programs[program],
-    //         name: program
-    //     }
-    // }, rAPI.api)
-    // tDataCache.getData() // if want- prob not tho
-
-
-    if (opt.id) {
-        let tData = (await rAPI.teams.get(opt.id)).data;
-        return tData;
-    }
-    if (opt.number) {
-        let tData = (await rAPI.teams.getByNumber(opt.number, rAPI.programs[program])).data;
-        return tData;
-    }
-}
-
 class C_Team {
-    public number: string = "";
-    public id: number = 0;
-    // @ts-ignore
-    public data: Team;
+    public number?: string;
+    public id?: number;
+    
+    public data?: Team;
 
     constructor(opt: { number?: string, id?: number }) {
         if (opt.id) this.id = opt.id;
@@ -45,34 +24,56 @@ class C_Team {
         this.check();
     }
 
-    async check() {
-        // these checks scary af
-        if (this.number != "" && this.id == 0) {
-            let teamData = await getTeamData({ number: this.number });
+    async check(): Promise<Team | undefined> {
+        let tDataCache = cache.getTeam({ id: this.id, number: this.number });
+        if (tDataCache) {
+            this.id = tDataCache?.teamID
+            this.number = tDataCache?.teamNumber
+
+            return new Team({
+                ...tDataCache.teamData,
+                id: tDataCache.teamID,
+                number: tDataCache.teamNumber,
+            }, rAPI.api);
+        }
+
+        // these checks scary af!!
+
+        // Has Number no ID
+        if (this.number && !this.id) {
+            let fullDataReturned = await rAPI.teams.getByNumber(this.number, rAPI.programs[program]);
+            let teamData = fullDataReturned.data;
             if (!teamData) return;
 
             this.id = teamData.id;
             this.data = teamData;
         }
-        if (this.number == "" && this.id != 0) {
-            let teamData = await getTeamData({ id: this.id });
+
+        // Has ID no Number
+        if (!this.number && this.id) {
+            let fullDataReturned = await rAPI.teams.get(this.id);
+            let teamData = fullDataReturned.data
             if (!teamData) return;
 
             this.number = teamData.number;
             this.data = teamData;
         }
-        return this.data
+
+        if (this.data) cache.addTeam(this.data);
+
+        return this.data;
     }
 
-    async getData(): Promise<Team> {
+    async getData(): Promise<Team | undefined> {
         if (this.data && this.data.id != 0) return this.data;
-        // @ts-ignore LOLOLOLOLOLOL.... yikes....
         return await this.check();
     }
 
-    async getEvents() {
+    async getEvents(): Promise<Event[] | undefined> {
         let d = await this.getData();
+        if (!d) return;
         let events = (await d.events()).data;
+        // console.log(events)
         return events;
     }
 }
@@ -115,7 +116,7 @@ class C_Event {
     async check() {
         if (this.data && this.id != 0) return this.data;
         let eData = (await rAPI.events.get(this.id)).data;
-        if (!eData) return ;
+        if (!eData) return;
         this.data = eData;
         return this.data;
     }

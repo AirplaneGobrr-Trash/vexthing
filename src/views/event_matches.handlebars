@@ -14,6 +14,7 @@
     <button onclick="loadHTML()">Update</button>
     <a href="/event/{{eventID}}/team/editor">Open Table editor</a>
 
+    {{#if ownMatchesHTML}}
     <h1 class="collapsible active">Our Matches:</h1>
     <div class="content">
         <div id="ourMatches" class="matchHolder">
@@ -22,8 +23,10 @@
     </div>
 
     <hr>
+    {{/if}}
 
-    <h1 class="collapsible">All Matches:</h1>
+    {{#if matchesHTML}}
+    <h1 class="collapsible {{#if ownMatchesHTML}}{{else}}active{{/if}}">All Matches:</h1>
     <div class="content">
         <div id="matches" class="matchHolder">
             {{{matchesHTML}}}
@@ -31,25 +34,41 @@
     </div>
 
     <hr>
-
+    {{/if}}
+    
+    {{#if ownMatchesHTML}}
     <h1 class="collapsible">Teams:</h1>
+    {{else}}
+    {{#if matchesHTML}}
+    <h1 class="collapsible">Teams:</h1>
+    {{else}}
+    <h1 class="collapsible active">Teams:</h1>
+    {{/if}}
+    {{/if}}
     <div class="content">
-        <h2><a style="color:blue;">Blue</a> = Loading, <a style="color: red;">Red</a> = No data, <a
-                style="color: green;">Green</a> = has data (no picture), <a style="color: lime;">Lime</a> = has data (w
-            picture)</h2>
+        <h2>
+            <a style="color:blue;">Blue</a> = Loading,
+            <a style="color: red;">Red</a> = No data,
+            <a style="color: green;">Green</a> = has data (no picture),
+            <a style="color: lime;">Lime</a> = has data (w picture)
+        </h2>
         <button onclick="sortTeams_Rank(this)">Sort Rank</button>
         <button onclick="sortTeams_Number(this)">Sort Number</button>
         <div id="teams">
+            {{{rankingHTML}}}
         </div>
     </div>
 
+    {{#if skillsHTML}}
     <hr>
 
     <h1 class="collapsible">Skills:</h1>
     <div class="content">
         <div id="skills">
+            {{{skillsHTML}}}
         </div>
     </div>
+    {{/if}}
 
     <script defer>
         const ourMatchesElm = document.getElementById("ourMatches")

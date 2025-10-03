@@ -1,229 +1,269 @@
-/* === Base Dark Theme === */
+/* === Base Theme === */
 body {
-    background-color: #222;
-    color: #eee;
-    font-family: "Segoe UI", Roboto, sans-serif;
-    margin: 0;
-    padding: 20px;
+  background: #222;
+  color: #eee;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 20px;
 }
 
 a {
-    color: #4da6ff;
-    text-decoration: none;
+  color: #4da6ff;
+  text-decoration: none;
+  transition: color 0.2s;
 }
-a:hover {
-    text-decoration: underline;
-}
+a:hover { color: #66b3ff; }
 
 /* === Header / Navbar === */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #1f1f1f;
-    padding: 12px 20px;
-    border-bottom: 2px solid #333;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f1f1f;
+  padding: 12px 20px;
+  border-bottom: 2px solid #333;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
-
 header h2 {
-    margin: 0;
-    font-size: 1.6rem;
-    color: #fff;
+  margin: 0;
+  font-size: 1.6rem;
+  color: #fff;
 }
-
 header nav {
-    display: flex;
-    gap: 15px;
+  display: flex;
+  gap: 15px;
 }
-
 header nav a {
-    color: #4da6ff;
-    font-weight: 500;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: background 0.2s, color 0.2s;
+  color: #4da6ff;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
 }
-
 header nav a:hover {
-    background-color: #4da6ff;
-    color: #222;
+  background: #4da6ff;
+  color: #222;
 }
-
 header .right a {
-    background-color: #ff8c42;
-    color: #222;
-    font-weight: bold;
-    padding: 6px 14px;
-    border-radius: 6px;
-    transition: background 0.2s;
+  background: #ff8c42;
+  color: #222;
+  font-weight: bold;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: background 0.2s;
 }
-
-header .right a:hover {
-    background-color: #ffa366;
-}
+header .right a:hover { background: #ffa366; }
 
 /* === Buttons === */
 button {
-    background-color: #4da6ff;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    margin: 5px 0;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+  background: #4da6ff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  margin: 5px 0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
 }
-
 button:hover {
-    background-color: #3399ff;
-    transform: scale(1.03);
+  background: #3399ff;
+  transform: scale(1.03);
 }
-
 button:disabled {
-    background-color: #555;
-    cursor: not-allowed;
+  background: #555;
+  cursor: not-allowed;
 }
-
-/* Optional button groups */
 .button-group {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 /* === Match & Data Cards === */
 .matchHolder {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
 }
-
 .match, .dataThing {
-    background: #333;
-    border: 2px solid #444;
-    border-radius: 8px;
-    margin: 8px;
-    padding: 12px 16px;
-    min-width: 120px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-    transition: transform 0.15s ease, border-color 0.15s ease;
+  background: #333;
+  border: 2px solid #444;
+  border-radius: 8px;
+  margin: 8px;
+  padding: 12px 16px;
+  min-width: 120px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  transition: transform 0.15s, border-color 0.15s;
 }
-
 .match:hover, .dataThing:hover {
-    transform: scale(1.01);
-    border-color: orange;
+  transform: scale(1.01);
+  border-color: orange;
 }
 
-.upcoming,
-.ourMatch {
-    border-color: yellow !important;
+/* === Teams Grid === */
+#teams {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px;
+  margin: 20px 0;
 }
 
-.sisterMatch {
-    border-color: pink;
+/* === Team Card === */
+.teamCard {
+  background: #2d2d2d;
+  border: 2px solid #444;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.35);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.teamCard:hover {
+  transform: translateY(-3px);
+  border-color: #4da6ff;
 }
 
-.sisterTeam {
-    color: pink;
+/* === Team Header === */
+.teamHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.teamHeader h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  flex-grow: 1;
+}
+.teamHeader a { font-weight: bold; }
+.scoreTotal {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffd966;
+  margin-left: auto;
 }
 
-.highlight {
-    color: yellow;
+/* === Rank Badge === */
+.rankBadge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-right: 10px;
+  background: #4da6ff;
+  color: #111;
 }
+.rank-1 .rankBadge { background: gold; color: #222; }
+.rank-2 .rankBadge { background: silver; color: #222; }
+.rank-3 .rankBadge { background: #cd7f32; color: #fff; }
+.rank-4 .rankBadge { background: #ff6f61; color: #fff; }
+.rank-5 .rankBadge { background: #ff884d; color: #fff; }
+.rank-6 .rankBadge { background: #ff9d4d; color: #111; }
+.rank-7 .rankBadge { background: #ffa84d; color: #111; }
+.rank-8 .rankBadge { background: #ffb84d; color: #111; }
+.rank-9 .rankBadge { background: #ffcc4d; color: #111; }
+.rank-10 .rankBadge { background: #ffe14d; color: #111; }
+.rank-11 .rankBadge { background: #d1ff4d; color: #111; }
+.rank-12 .rankBadge { background: #9dff4d; color: #111; }
+.rank-13 .rankBadge { background: #4dff88; color: #111; }
+.rank-14 .rankBadge { background: #4dffe1; color: #111; }
+.rank-15 .rankBadge { background: #4db8ff; color: #111; }
+.rank-16 .rankBadge { background: #8c4dff; color: #fff; }
 
-.team_blue {
-    color: cyan;
+/* === Team Stats === */
+.teamStats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px 12px;
+  font-size: 0.9rem;
 }
-
-.team_red {
-    color: red;
+.teamStats p {
+  background: #383838;
+  padding: 6px 10px;
+  border-radius: 6px;
+  line-height: 1.4;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
 }
+.teamStats strong { color: #4da6ff; }
 
-/* === Collapsible Headers === */
+/* === Highlights === */
+.upcoming, .ourMatch { border-color: yellow !important; }
+.sisterMatch        { border-color: pink; }
+.sisterTeam         { color: pink; }
+.highlight          { color: yellow; }
+.team_blue          { color: cyan; }
+.team_red           { color: red; }
+
+/* === Collapsibles === */
 .collapsible {
-    cursor: pointer;
-    background: #333;
-    padding: 14px 18px;
-    margin: 10px 0;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #fff;
-    transition: background 0.25s, border-color 0.25s;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  cursor: pointer;
+  background: #333;
+  padding: 14px 18px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.25s, border-color 0.25s;
 }
-
-.collapsible:hover {
-    background: #444;
-}
-
+.collapsible:hover { background: #444; }
 .collapsible:after {
-    content: '\002B';
-    font-weight: bold;
-    margin-left: 10px;
-    transition: transform 0.2s;
+  content: '\002B';
+  font-weight: bold;
+  margin-left: 10px;
+  transition: transform 0.2s;
 }
+.active:after { content: "\2212"; }
 
-.active:after {
-    content: "\2212";
-}
-
-/* === Collapsible Content === */
 .content {
-    padding: 0 18px;
-    margin-bottom: 15px;
-    background: #2a2a2a;
-    border-radius: 8px;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.25s ease-out, padding 0.25s ease-out;
+  padding: 0 18px;
+  margin-bottom: 15px;
+  background: #2a2a2a;
+  border-radius: 8px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.25s ease-out, padding 0.25s ease-out;
 }
 
 /* === Tables (Dark Mode) === */
 table {
-    font-family: "Segoe UI", Roboto, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 10px;
-    background: #2c2c2c;
-    border-radius: 8px;
-    overflow: hidden;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #2c2c2c;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: "Segoe UI", Roboto, sans-serif;
 }
-
 td, th {
-    border: 1px solid #444;
-    padding: 10px;
+  border: 1px solid #444;
+  padding: 10px;
 }
-
 th {
-    background: #3a3a3a;
-    color: #fff;
-    text-align: left;
+  background: #3a3a3a;
+  color: #fff;
+  text-align: left;
 }
-
-tr:nth-child(even) {
-    background-color: #2a2a2a;
-}
+tr:nth-child(even) { background: #2a2a2a; }
 
 /* === Responsive Adjustments === */
 @media screen and (max-width: 600px) {
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-    header nav {
-        margin-top: 10px;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-    header .right {
-        margin-top: 10px;
-    }
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  header nav {
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header .right { margin-top: 10px; }
 }

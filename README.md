@@ -45,6 +45,13 @@ As a senior, this is my final year participating as a *Student* in Vex. However,
 
 # [🔖 Version History](./versions.md)
 
-## 3.0.0
+## 3.0.0 - WIP Rebuild
 
--- WIP --
+- **__WIP__**
+- This is a whole rewrite using bun and typescript!
+- This will have all futures said for v2+
+- Switched to [bunorm](https://github.com/airplanegobrr/BunORM/) (my custom fork)
+    - Q: There is no code changes!
+    - A: The current [bunorm on NPM](https://www.npmjs.com/package/bunorm) is NOT the same code on the github- not sure why- the github code has lots of micro fixes
+- Switched to [bunrest](https://github.com/airplaneGobrr/bunrest) (my custom fork)
+    - Lots of tiny addons I feel are needed for the bunrest lib-

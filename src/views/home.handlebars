@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VexThing</title>
     <link rel="stylesheet" href="/static/styles/main.css">
+    <style>
+        .center {
+            display: flex;
+            /* make it flex */
+            flex-direction: column;
+            /* stack items vertically */
+            justify-content: center;
+            /* center vertically */
+            align-items: center;
+            /* take full viewport height */
+            text-align: center;
+            /* optional: center text */
+        }
+    </style>
 </head>
 
 <body class="theme-blueprint-dark">
@@ -20,7 +34,7 @@
         </div>
     </header>
 
-    <main>
+    <main class="center">
         <h1>Welcome to VexThing</h1>
         <p>A simple and modern tool for exploring VEX Robotics teams and events.</p>
         <div class="buttons">
@@ -29,7 +43,7 @@
         </div>
     </main>
 
-    <footer>
+    <footer class="center">
         © 2025 VexThing
     </footer>
 </body>

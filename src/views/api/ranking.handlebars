@@ -1,0 +1,42 @@
+{{#if testing}}
+
+<link rel="stylesheet" href="/static/styles/main.css">
+
+<div id="teams">
+  {{/if}}
+
+  {{#each rankings}}
+  <div id="{{teamNumber}}"
+    class="teamCard rank-{{rank}} {{#if isSister}}sisterMatch{{/if}} {{#if isOwn}}ourMatch{{/if}}">
+    <div class="teamHeader">
+      {{#if hasRank}}
+      <span class="rankBadge">#{{rank}}</span>
+      {{/if}}
+      <h2>
+        <a href="/event/{{@root.eventID}}/team/{{teamID}}?div={{@root.divID}}" target="_blank"
+          style="color: {{#if dataHas}}{{#if dataHasPicture}}lime{{else}}green{{/if}}{{else}}red{{/if}};">
+          {{teamNumber}}
+        </a>
+      </h2>
+    </div>
+
+    {{#if hasRank}}
+    <div class="teamStats">
+      <p>Wins: <u>{{wins}}</u></p>
+      <p>Losses: <u>{{losses}}</u></p>
+      <p>Ties: <u>{{ties}}</u></p>
+      <p>WP: <u>{{wp}}</u></p>
+      <p>AP: <u>{{ap}}</u></p>
+      <p>SP: <u>{{sp}}</u></p>
+      <p>High: <u>{{high_score}}</u></p>
+      <p>Avg: <u>{{average_points}}</u></p>
+      <p>Total: <u>{{total_points}}</u></p>
+    </div>
+    {{/if}}
+  </div>
+  {{/each}}
+
+
+  {{#if testing}}
+</div>
+{{/if}}

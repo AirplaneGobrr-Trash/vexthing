@@ -1,0 +1,32 @@
+{{#if testing}}
+<link rel="stylesheet" href="/static/styles/main.css">
+<div id="teams">
+  {{/if}}
+
+  {{#each skills}}
+  <div class="teamCard rank-{{overallRank}} {{#if isSister}}sisterMatch{{/if}} {{#if isOwn}}ourMatch{{/if}}"
+    id="{{teamNumber}}">
+    <div class="teamHeader">
+      <span class="rankBadge">{{overallRank}}</span>
+      <h2>
+        <a href="/event/{{@root.eventID}}/team/{{teamID}}?div={{@root.divID}}" target="_blank">
+          {{teamNumber}}
+        </a>
+      </h2>
+      <span class="scoreTotal">Total: {{total}}</span>
+    </div>
+
+    <div class="teamStats">
+      {{#if driverRank}}
+      <p><strong>Driver:</strong> #{{driverRank}} — {{driverScore}} ({{driverAttempts}} tries)</p>
+      {{/if}}
+      {{#if progRank}}
+      <p><strong>Programming:</strong> #{{progRank}} — {{progScore}} ({{progAttempts}} tries)</p>
+      {{/if}}
+    </div>
+  </div>
+  {{/each}}
+
+  {{#if testing}}
+</div>
+{{/if}}
