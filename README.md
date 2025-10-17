@@ -1,5 +1,20 @@
 # Vex Scouting
 
+## Developer's Note
+~~As a senior, this is my final year participating as a *Student* in Vex. However, I plan to remain involved and keep this project updated.~~
+
+Well… things didn’t exactly go as planned. For reasons that are beyond me, I’m no longer part of my local Vex community, and I won’t be putting more effort into this project unless I happen to get *really bored*.
+
+It’s a shame- I had big plans, including a complete rewrite in [TypeScript](https://github.com/AirplaneGobrr-Trash/vexthing/tree/bun-ts) that was almost done. But, apparently, life happens, and the “people” in my local Vex community- (you know who you are!!)- made… interesting choices.
+
+If anyone actually finds this project useful and wants to see it continue, I *might* consider supporting it again. Otherwise, enjoy what’s here- it’s the product of someone who cared far more than the “people” I **HELPED** ever seemed to care about me.
+
+You can still [email me](airplane@airplanegobrr.xyz) if you want- I’m always happy to help- or for more information as to what happened.
+
+And seriously, if you liked **VexThing**, please take a moment to fill out [this form](https://forms.gle/aobXyfi5RJgt1yuh7).
+
+## Info
+
 An app designed to streamline scouting during a Vex robotics competitions!
 
 - Server-Rendered HTML for "lightning-fast" speeds.
@@ -9,10 +24,6 @@ An app designed to streamline scouting during a Vex robotics competitions!
 ⚠️ **Note: This app does not include a login page and is meant for on-site deployment only.**
 
 🚀 *A public version with a login system is planned for release with version `2.5.0`.*
-
-### Developer's Note
-As a senior, this is my final year participating as a *Student* in Vex. However, I plan to remain involved and keep this project updated.
-
 
 # 🔮 Futures
 
